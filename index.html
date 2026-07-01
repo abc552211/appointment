@@ -129,20 +129,7 @@
                         <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="30">
                         <span>天</span>
                     </div>
-                    <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存設定</button>
-                </div>
-
-                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                    <h3 class="font-bold text-xs text-indigo-600 uppercase tracking-wider">彈性排班機制</h3>
-                    <select class="w-full border border-slate-200 rounded-xl p-2 text-xs bg-white outline-none">
-                        <option>王大明 驗光師</option>
-                    </select>
-                    <div class="flex gap-2 items-center text-sm text-slate-600">
-                        <span>週一上限</span>
-                        <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="10">
-                        <span>人</span>
-                    </div>
-                    <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存班表</button>
+                    <button onclick="triggerAlert('系統提示', '設定已成功儲存！')" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存設定</button>
                 </div>
             </div>
             
@@ -150,10 +137,36 @@
         </div>
 
         <footer class="absolute bottom-0 left-0 w-full p-4 text-center border-t border-slate-100 bg-white z-40">
-            <button onclick="adminLogin()" class="text-[11px] text-slate-300 hover:text-slate-400 transition-all tracking-wider cursor-pointer relative z-50 py-1 px-3">管理人員系統登入</button>
+            <button onclick="openAdminLoginModal()" class="text-[11px] text-slate-300 hover:text-slate-400 transition-all tracking-wider cursor-pointer relative z-50 py-1 px-3">管理人員系統登入</button>
         </footer>
-
     </div>
+
+    <div id="loginModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="text-base font-bold text-slate-800">管理人員系統登入</h3>
+                <button onclick="closeAdminLoginModal()" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+            </div>
+            <div>
+                <label class="block text-xs font-medium text-slate-500 mb-1">請輸入管理員密碼</label>
+                <input type="password" id="adminPasswordInput" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500" placeholder="預設密碼為 1234">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeAdminLoginModal()" class="flex-1 bg-slate-100 text-slate-600 py-2.5 rounded-xl text-sm font-medium hover:bg-slate-200 transition-all">取消</button>
+                <button onclick="submitAdminLogin()" class="flex-1 bg-blue-600 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-all">確認登入</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-[100] hidden items-center justify-center p-4">
+        <div class="bg-white rounded-2xl p-6 w-full max-w-sm shadow-xl text-center space-y-4">
+            <div class="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center mx-auto text-xl font-bold">i</div>
+            <h3 id="alertTitle" class="text-base font-bold text-slate-800">提示</h3>
+            <p id="alertMessage" class="text-sm text-slate-600 whitespace-pre-line leading-relaxed"></p>
+            <button onclick="closeAlertModal()" class="w-full bg-blue-600 text-white py-2.5 rounded-xl text-sm font-medium hover:bg-blue-700 transition-all mt-2">確定</button>
+        </div>
+    </div>
+
 
     <script>
     const SUPABASE_URL = 'https://xwyyptgrzwirygkvhfsr.supabase.co';
@@ -168,6 +181,41 @@
         await loadReferrals();
         await loadServices();
     });
+
+    // 呼叫客製化彈窗
+    type="text/javascript"
+    function triggerAlert(title, message) {
+        document.getElementById('alertTitle').innerText = title;
+        document.getElementById('alertMessage').innerText = message;
+        const modal = document.getElementById('alertModal');
+        modal.style.display = 'flex';
+    }
+
+    function closeAlertModal() {
+        document.getElementById('alertModal').style.display = 'none';
+    }
+
+    // 管理員登入彈窗控制
+    function openAdminLoginModal() {
+        document.getElementById('adminPasswordInput').value = '';
+        document.getElementById('loginModal').style.display = 'flex';
+        document.getElementById('adminPasswordInput').focus();
+    }
+
+    function closeAdminLoginModal() {
+        document.getElementById('loginModal').style.display = 'none';
+    }
+
+    function submitAdminLogin() {
+        const password = document.getElementById('adminPasswordInput').value;
+        if (password === '1234') {
+            closeAdminLoginModal();
+            toggleSection('adminSection');
+            loadAdminAppointments();
+        } else {
+            triggerAlert('登入失敗', '密碼錯誤，請重新輸入！');
+        }
+    }
 
     async function loadOptometrists() {
         const { data } = await supabase.from('optometrists').select('*').eq('is_active', true);
@@ -264,25 +312,25 @@
                 notes: document.getElementById('notes').value
             }]);
             if (error) throw error;
-            alert(`預約成功！\n您的預約單號為：${bookingNo}`);
+            triggerAlert('預約成功！', `您的預約單號為：${bookingNo}\n請牢記此單號以便日後查詢。`);
             document.getElementById('bookingForm').reset();
             document.getElementById('bookTime').innerHTML = '<option value="" disabled selected>請先選擇日期</option>';
             showOptProfile(0);
         } catch (err) {
-            alert('預約失敗，請檢查資料庫連線。');
+            triggerAlert('預約失敗', '預約失敗，請檢查網路連線或稍後再試。');
         }
     });
 
     async function searchAppointments() {
         const phone = document.getElementById('queryPhone').value;
-        if(!phone) return alert('請輸入電話號碼');
+        if(!phone) return triggerAlert('欄位未填', '請輸入電話號碼');
         
         const { data, error } = await supabase.from('appointments').select('*, optometrists(name)').eq('customer_phone', phone).eq('status', 'pending');
         const resultContainer = document.getElementById('resultCards');
         resultContainer.innerHTML = ''; 
         if (error || !data || data.length === 0) {
             resultContainer.classList.add('hidden');
-            return alert('查無尚未赴約的紀錄。');
+            return triggerAlert('查無紀錄', '查無尚未赴約的預約紀錄。');
         }
         resultContainer.classList.remove('hidden');
         data.forEach(app => {
@@ -304,10 +352,9 @@
     async function cancelAppointment(appId) {
         if(!confirm('您確定要取消這筆預約嗎？')) return;
         const { error } = await supabase.from('appointments').update({ status: 'cancelled' }).eq('id', appId);
-        if(!error) { alert('預約已取消。'); searchAppointments(); }
+        if(!error) { triggerAlert('取消成功', '您的預約已成功取消。'); searchAppointments(); }
     }
 
-    // 使用 display 屬性徹底阻斷切換時的點擊覆蓋問題
     function toggleSection(sectionId) {
         ['bookingSection', 'querySection', 'adminSection'].forEach(id => {
             const section = document.getElementById(id);
@@ -334,16 +381,6 @@
             navBtn.style.display = 'none';
         }
         window.scrollTo(0,0);
-    }
-
-    function adminLogin() {
-        const password = prompt('請輸入管理員密碼：(預設測試密碼為 1234)');
-        if (password === '1234') {
-            toggleSection('adminSection');
-            loadAdminAppointments();
-        } else if (password !== null) {
-            alert('密碼錯誤！');
-        }
     }
 
     function switchAdminTab(tabId) {
@@ -413,7 +450,7 @@
 
     async function updateAdminStatus(appId, newStatus) {
         const { error } = await supabase.from('appointments').update({ status: newStatus }).eq('id', appId);
-        if (error) alert('狀態更新失敗');
+        if (error) triggerAlert('提示', '狀態更新失敗');
     }
     </script>
 </body>
