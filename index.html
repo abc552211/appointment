@@ -13,15 +13,15 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl relative flex flex-col justify-between">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl flex flex-col justify-between relative z-0">
         
-        <div>
-            <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 sticky top-0 z-10 flex justify-between items-center shadow-sm">
+        <div class="w-full flex-1">
+            <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-sm">
                 <h1 class="text-lg font-bold tracking-wide" id="headerTitle">大學眼鏡 / 驗光所</h1>
-                <button id="navBtn" onclick="toggleSection('querySection')" class="text-xs bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/30 transition-all">查詢/取消</button>
+                <button id="navBtn" onclick="toggleSection('querySection')" class="text-xs bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/30 transition-all cursor-pointer">查詢/取消</button>
             </header>
 
-            <main id="bookingSection" class="p-5 space-y-6">
+            <main id="bookingSection" class="p-5 space-y-6 block">
                 <section>
                     <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
                         <span class="w-1 h-4 bg-blue-600 rounded-full"></span>專業驗光師團隊
@@ -91,7 +91,7 @@
                             <textarea id="notes" rows="2" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all" placeholder="若有特殊需求請在此留言..."></textarea>
                         </div>
 
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-blue-200 active:scale-[0.99] transition-all mt-2">確認送出預約</button>
+                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-blue-200 active:scale-[0.99] transition-all mt-2 cursor-pointer">確認送出預約</button>
                     </form>
                 </section>
             </main>
@@ -101,20 +101,20 @@
                     <label class="block text-xs font-medium text-slate-500">請輸入預約時的手機號碼</label>
                     <div class="flex gap-2">
                         <input type="tel" id="queryPhone" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500" placeholder="09XX-XXX-XXX">
-                        <button onclick="searchAppointments()" class="bg-slate-900 text-white px-5 text-sm font-medium rounded-xl active:bg-slate-800 transition-all">查詢</button>
+                        <button onclick="searchAppointments()" class="bg-slate-900 text-white px-5 text-sm font-medium rounded-xl active:bg-slate-800 transition-all cursor-pointer">查詢</button>
                     </div>
                 </div>
                 <div id="resultCards" class="space-y-3 hidden"></div>
-                <button onclick="toggleSection('bookingSection')" class="w-full text-slate-500 text-xs py-3 text-center hover:text-slate-700 transition-all">← 返回預約首頁</button>
+                <button onclick="toggleSection('bookingSection')" class="w-full text-slate-500 text-xs py-3 text-center hover:text-slate-700 transition-all cursor-pointer">← 返回預約首頁</button>
             </main>
 
-            <main id="adminSection" class="p-4 hidden space-y-4 bg-slate-50 min-h-[calc(100vh-100px)]">
+            <main id="adminSection" class="p-4 hidden space-y-4 bg-slate-50">
                 <div class="flex p-1 bg-slate-200/70 rounded-xl gap-1">
-                    <button id="tab-adminAppointments" onclick="switchAdminTab('adminAppointments')" class="flex-1 bg-white text-slate-800 py-2 rounded-lg text-xs font-bold shadow-sm transition-all">預約一覽表</button>
-                    <button id="tab-adminSettings" onclick="switchAdminTab('adminSettings')" class="flex-1 text-slate-600 py-2 rounded-lg text-xs font-bold transition-all">系統與班表設定</button>
+                    <button id="tab-adminAppointments" onclick="switchAdminTab('adminAppointments')" class="flex-1 bg-white text-slate-800 py-2 rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer">預約一覽表</button>
+                    <button id="tab-adminSettings" onclick="switchAdminTab('adminSettings')" class="flex-1 text-slate-500 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer">系統與班表設定</button>
                 </div>
 
-                <div id="adminAppointments" class="space-y-3">
+                <div id="adminAppointments" class="space-y-3 block">
                     <div id="adminAppointmentCards" class="space-y-3">
                         <p class="text-xs text-slate-400 text-center py-8">讀取中...</p>
                     </div>
@@ -130,7 +130,7 @@
                             <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="30">
                             <span>天</span>
                         </div>
-                        <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all">儲儲設定</button>
+                        <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存設定</button>
                     </div>
 
                     <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
@@ -143,16 +143,16 @@
                             <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="10">
                             <span>人</span>
                         </div>
-                        <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all">儲存班表</button>
+                        <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存班表</button>
                     </div>
                 </div>
                 
-                <button onclick="toggleSection('bookingSection')" class="w-full text-rose-600 text-xs py-3 border border-rose-100 rounded-xl bg-rose-50/50 hover:bg-rose-50 font-medium transition-all">登出並返回前台</button>
+                <button onclick="toggleSection('bookingSection')" class="w-full text-rose-600 text-xs py-3 border border-rose-100 rounded-xl bg-rose-50/50 hover:bg-rose-50 font-medium transition-all cursor-pointer">登出並返回前台</button>
             </main>
         </div>
 
-        <footer class="w-full p-4 text-center border-t border-slate-50 bg-white">
-            <button onclick="adminLogin()" class="text-[11px] text-slate-300 hover:text-slate-400 transition-all tracking-wider">管理人員系統登入</button>
+        <footer class="w-full p-4 text-center border-t border-slate-100 bg-white sticky bottom-0 z-50">
+            <button onclick="adminLogin()" class="text-[11px] text-slate-300 hover:text-slate-400 transition-all tracking-wider cursor-pointer">管理人員系統登入</button>
         </footer>
 
     </div>
@@ -187,13 +187,14 @@
 
     function renderOptometristTabs() {
         const tabsContainer = document.getElementById('optometristTabs');
+        if(!tabsContainer) return;
         tabsContainer.innerHTML = '';
         optometristsData.forEach((opt, index) => {
             const isActive = index === currentOptIndex;
             const btnClass = isActive 
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-100' 
                 : 'bg-slate-100 text-slate-600 hover:bg-slate-200';
-            tabsContainer.innerHTML += `<button onclick="showOptProfile(${index})" type="button" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all ${btnClass}">${opt.name} 驗光師</button>`;
+            tabsContainer.innerHTML += `<button onclick="showOptProfile(${index})" type="button" class="shrink-0 px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer ${btnClass}">${opt.name} 驗光師</button>`;
         });
     }
 
@@ -201,6 +202,7 @@
         currentOptIndex = index;
         renderOptometristTabs();
         const opt = optometristsData[index];
+        if(!opt) return;
         document.getElementById('optName').innerText = `${opt.name} ${opt.license ? '('+opt.license+')' : ''}`;
         
         let specialtiesText = '專長：未提供';
@@ -249,8 +251,6 @@
         const bookingNo = 'BK' + Math.floor(Math.random() * 90000 + 10000);
         const optId = document.getElementById('optometristSelect').value;
         const refId = document.getElementById('referral').value;
-
-        // 修正：撈取勾選的諮詢項目陣列
         const selectedServices = Array.from(document.querySelectorAll('#servicesContainer input[type="checkbox"]:checked')).map(cb => cb.value);
 
         try {
@@ -262,7 +262,7 @@
                 appointment_time: document.getElementById('bookTime').value + ':00',
                 optometrist_id: optId ? optId : null,
                 referral_source_id: refId ? refId : null,
-                selected_services: selectedServices, // 補入諮詢項目欄位 (請確認 Supabase 欄位名相同，或改用關聯表)
+                selected_services: selectedServices, 
                 notes: document.getElementById('notes').value
             }]);
             if (error) throw error;
@@ -297,7 +297,7 @@
                         <p>單號：<span class="font-mono">${app.booking_no}</span></p>
                         <p>驗光師：${optName}</p>
                     </div>
-                    <button onclick="cancelAppointment('${app.id}')" type="button" class="mt-2 w-full border border-rose-200 text-rose-600 hover:bg-rose-50 py-2 rounded-xl text-xs font-bold transition-all">取消此筆預約</button>
+                    <button onclick="cancelAppointment('${app.id}')" type="button" class="mt-2 w-full border border-rose-200 text-rose-600 hover:bg-rose-50 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer">取消此筆預約</button>
                 </div>
             `;
         });
@@ -309,11 +309,17 @@
         if(!error) { alert('預約已取消。'); searchAppointments(); }
     }
 
+    // 修正：全面改用類名與實體控制顯示，完全阻斷隱形區塊擋住點擊的 Bug
     function toggleSection(sectionId) {
         ['bookingSection', 'querySection', 'adminSection'].forEach(id => {
-            document.getElementById(id).classList.add('hidden');
+            const section = document.getElementById(id);
+            section.classList.add('hidden');
+            section.classList.remove('block');
         });
-        document.getElementById(sectionId).classList.remove('hidden');
+        
+        const targetSection = document.getElementById(sectionId);
+        targetSection.classList.remove('hidden');
+        targetSection.classList.add('block');
         
         const navBtn = document.getElementById('navBtn');
         const headerTitle = document.getElementById('headerTitle');
@@ -331,30 +337,35 @@
             headerTitle.innerText = '後台管理系統';
             navBtn.classList.add('hidden');
         }
+        window.scrollTo(0,0);
     }
 
+    // 修正：異步登入提示，防止主畫面失去點擊回應
     function adminLogin() {
-        const password = prompt('請輸入管理員密碼：(預設測試密碼為 1234)');
-        if (password === '1234') {
-            toggleSection('adminSection');
-            loadAdminAppointments();
-        } else if (password !== null) {
-            alert('密碼錯誤！');
-        }
+        setTimeout(() => {
+            const password = prompt('請輸入管理員密碼：(預設測試密碼為 1234)');
+            if (password === '1234') {
+                toggleSection('adminSection');
+                loadAdminAppointments();
+            } else if (password !== null) {
+                alert('密碼錯誤！');
+            }
+        }, 50);
     }
 
     function switchAdminTab(tabId) {
-        document.getElementById('adminAppointments').classList.add('hidden');
-        document.getElementById('adminSettings').classList.add('hidden');
-        document.getElementById(tabId).classList.remove('hidden');
-
         const tabs = ['adminAppointments', 'adminSettings'];
         tabs.forEach(t => {
-            const el = document.getElementById('tab-' + t);
+            const block = document.getElementById(t);
+            const btn = document.getElementById('tab-' + t);
             if(t === tabId) {
-                el.className = "flex-1 bg-white text-slate-800 py-2 rounded-lg text-xs font-bold shadow-sm transition-all";
+                block.classList.remove('hidden');
+                block.classList.add('block');
+                if(btn) btn.className = "flex-1 bg-white text-slate-800 py-2 rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer";
             } else {
-                el.className = "flex-1 text-slate-500 py-2 rounded-lg text-xs font-bold transition-all";
+                block.classList.add('hidden');
+                block.classList.remove('block');
+                if(btn) btn.className = "flex-1 text-slate-500 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer";
             }
         });
     }
