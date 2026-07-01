@@ -11,21 +11,20 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-gray-50 text-gray-800 font-sans">
+<body class="bg-gray-50 text-gray-800 font-sans relative min-h-screen pb-16">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg relative pb-16">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-lg relative">
         
         <header class="bg-blue-600 text-white p-4 sticky top-0 z-10 flex justify-between items-center">
-            <h1 class="text-xl font-bold">大學眼鏡 / 驗光所</h1>
-            <button onclick="toggleSection('querySection')" class="text-sm bg-blue-700 px-3 py-1 rounded-full border border-blue-400">查詢/取消</button>
+            <h1 class="text-xl font-bold" id="headerTitle">大學眼鏡 / 驗光所</h1>
+            <button id="navBtn" onclick="toggleSection('querySection')" class="text-sm bg-blue-700 px-3 py-1 rounded-full border border-blue-400">查詢/取消</button>
         </header>
 
         <main id="bookingSection" class="p-4">
             
             <section class="mb-6">
                 <h2 class="text-lg font-bold mb-3 border-l-4 border-blue-600 pl-2">專業驗光師團隊</h2>
-                <div class="flex overflow-x-auto space-x-2 no-scrollbar mb-3" id="optometristTabs">
-                    </div>
+                <div class="flex overflow-x-auto space-x-2 no-scrollbar mb-3" id="optometristTabs"></div>
                 
                 <div class="bg-blue-50 p-4 rounded-xl flex gap-4 items-center min-h-[100px]">
                     <div class="w-16 h-16 bg-gray-300 rounded-full shrink-0"></div>
@@ -42,7 +41,6 @@
             <section>
                 <h2 class="text-lg font-bold mb-4 border-l-4 border-blue-600 pl-2">立即預約</h2>
                 <form id="bookingForm" class="space-y-4">
-                    
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">姓名</label>
@@ -63,8 +61,7 @@
 
                     <div>
                         <label class="block text-sm text-gray-600 mb-2">諮詢項目 (可複選)</label>
-                        <div class="grid grid-cols-2 gap-2 text-sm" id="servicesContainer">
-                            </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm" id="servicesContainer"></div>
                     </div>
 
                     <div>
@@ -97,8 +94,8 @@
             </section>
         </main>
 
-        <main id="querySection" class="p-4 hidden bg-gray-100 min-h-screen">
-            <h2 class="text-lg font-bold mb-4">查詢 / 取消預約</h2>
+        <main id="querySection" class="p-4 hidden bg-gray-50 min-h-screen">
+            <h2 class="text-lg font-bold mb-4 border-l-4 border-blue-600 pl-2">查詢 / 取消預約</h2>
             <div class="bg-white p-4 rounded-xl shadow-sm border">
                 <label class="block text-sm text-gray-600 mb-2">請輸入預約時的電話號碼</label>
                 <div class="flex gap-2">
@@ -107,13 +104,58 @@
                 </div>
             </div>
             
-            <div id="resultCards" class="mt-4 space-y-3 hidden">
-                </div>
+            <div id="resultCards" class="mt-4 space-y-3 hidden"></div>
             <button onclick="toggleSection('bookingSection')" class="mt-6 w-full text-blue-600 text-sm py-2">返回預約首頁</button>
         </main>
 
+        <main id="adminSection" class="p-4 hidden bg-gray-100 min-h-screen">
+            <div class="flex space-x-2 mb-4">
+                <button onclick="switchAdminTab('adminAppointments')" class="flex-1 bg-gray-800 text-white py-2 rounded-lg text-sm font-bold">預約一覽表</button>
+                <button onclick="switchAdminTab('adminSettings')" class="flex-1 bg-gray-300 text-gray-700 py-2 rounded-lg text-sm font-bold">系統與班表設定</button>
+            </div>
+
+            <div id="adminAppointments" class="space-y-4">
+                <h2 class="text-lg font-bold border-l-4 border-gray-800 pl-2">近期預約管理</h2>
+                <div id="adminAppointmentCards" class="space-y-3">
+                    <p class="text-sm text-gray-500">讀取中...</p>
+                </div>
+            </div>
+
+            <div id="adminSettings" class="space-y-4 hidden">
+                <h2 class="text-lg font-bold border-l-4 border-gray-800 pl-2">參數與排班設定</h2>
+                
+                <div class="bg-white p-4 rounded-xl shadow-sm border">
+                    <h3 class="font-bold text-sm mb-2 text-blue-800">預約天數開放設定</h3>
+                    <div class="flex gap-2 items-center mb-2">
+                        <span class="text-sm">開放未來</span>
+                        <input type="number" class="w-16 border rounded p-1 text-center" value="3">
+                        <span class="text-sm">至</span>
+                        <input type="number" class="w-16 border rounded p-1 text-center" value="30">
+                        <span class="text-sm">天</span>
+                    </div>
+                    <button class="w-full bg-gray-200 text-sm py-1 rounded">儲存設定</button>
+                </div>
+
+                <div class="bg-white p-4 rounded-xl shadow-sm border">
+                    <h3 class="font-bold text-sm mb-2 text-blue-800">彈性排班機制 (示意)</h3>
+                    <p class="text-xs text-gray-500 mb-2">請選擇驗光師設定單日最高人數與時段</p>
+                    <select class="w-full border rounded p-2 text-sm mb-2">
+                        <option>王大明 驗光師</option>
+                    </select>
+                    <div class="flex gap-2 items-center">
+                        <span class="text-sm">週一上限</span>
+                        <input type="number" class="w-16 border rounded p-1 text-center" value="10">
+                        <span class="text-sm">人</span>
+                    </div>
+                    <button class="w-full bg-gray-200 text-sm py-1 rounded mt-2">儲存班表</button>
+                </div>
+            </div>
+            
+            <button onclick="toggleSection('bookingSection')" class="mt-6 w-full text-red-600 text-sm py-2 border border-red-200 rounded-lg bg-white">登出並返回前台</button>
+        </main>
+
         <footer class="absolute bottom-0 w-full p-4 text-center">
-            <a href="/admin-login" class="text-[10px] text-gray-300 hover:text-gray-400">管理人員登入</a>
+            <button onclick="adminLogin()" class="text-[10px] text-gray-300 hover:text-gray-400">管理人員登入</button>
         </footer>
 
     </div>
@@ -123,7 +165,6 @@
     const SUPABASE_KEY = 'sb_publishable_Nb8lbrKVTRuj4wRkTN66kg_Cy1nBNgz';
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 全域變數存驗光師資料，方便切換畫面
     let optometristsData = [];
 
     document.addEventListener('DOMContentLoaded', async () => {
@@ -132,11 +173,11 @@
         await loadServices();
     });
 
-    // 1. 動態載入驗光師，並綁定「點擊按鈕」更新下方卡片
+    // ================= 前台邏輯 =================
+
     async function loadOptometrists() {
-        const { data, error } = await supabase.from('optometrists').select('*').eq('is_active', true);
-        if (error || !data) return;
-        
+        const { data } = await supabase.from('optometrists').select('*').eq('is_active', true);
+        if (!data) return;
         optometristsData = data;
         const tabsContainer = document.getElementById('optometristTabs');
         const selectContainer = document.getElementById('optometristSelect');
@@ -145,33 +186,23 @@
         selectContainer.innerHTML = '<option value="">不指定 (安排最快時段)</option>';
 
         data.forEach((opt, index) => {
-            // 加入 onclick 事件，點擊時執行 showOptProfile
-            tabsContainer.innerHTML += `<button onclick="showOptProfile(${index})" type="button" class="shrink-0 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium mr-2 active:bg-blue-800 focus:ring-2 focus:ring-blue-300">${opt.name} 驗光師</button>`;
+            tabsContainer.innerHTML += `<button onclick="showOptProfile(${index})" type="button" class="shrink-0 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium mr-2">${opt.name} 驗光師</button>`;
             selectContainer.innerHTML += `<option value="${opt.id}">${opt.name}</option>`;
         });
-
-        // 預設顯示第一位驗光師的資料
         if(data.length > 0) showOptProfile(0);
     }
 
-    // 負責更新驗光師卡片內容的函數
     function showOptProfile(index) {
         const opt = optometristsData[index];
         document.getElementById('optName').innerText = `${opt.name} ${opt.license ? '('+opt.license+')' : ''}`;
-        
-        // 處理陣列格式的專長
         let specialtiesText = '專長：未提供';
-        if (opt.specialties && Array.isArray(opt.specialties)) {
-             specialtiesText = `專長：${opt.specialties.join('、')}`;
-        } else if (typeof opt.specialties === 'string') {
-             // 若存成字串時的備用處理
-             specialtiesText = `專長：${opt.specialties.replace(/[{}"\[\]]/g, '').split(',').join('、')}`;
-        }
+        if (opt.specialties && Array.isArray(opt.specialties)) specialtiesText = `專長：${opt.specialties.join('、')}`;
+        else if (typeof opt.specialties === 'string') specialtiesText = `專長：${opt.specialties.replace(/[{}"\[\]]/g, '').split(',').join('、')}`;
+        
         document.getElementById('optSpec').innerText = specialtiesText;
         document.getElementById('optGreet').innerText = opt.greeting ? `「${opt.greeting}」` : '';
     }
 
-    // 2. 載入合作行號
     async function loadReferrals() {
         const { data } = await supabase.from('referral_sources').select('*').eq('is_active', true);
         if (!data) return;
@@ -179,7 +210,6 @@
         data.forEach(ref => select.innerHTML += `<option value="${ref.id}">${ref.name}</option>`);
     }
 
-    // 3. 載入服務項目 (建立 Checkbox)
     async function loadServices() {
         const { data } = await supabase.from('services').select('*').eq('is_active', true);
         if (!data) return;
@@ -190,115 +220,176 @@
         });
     }
 
-    // 4. 客戶選完日期後，動態產生時間選項
     function loadAvailableTimes() {
         const dateVal = document.getElementById('bookDate').value;
         const timeSelect = document.getElementById('bookTime');
-        
         if(!dateVal) {
             timeSelect.innerHTML = '<option value="" disabled selected>請先選擇日期</option>';
             return;
         }
-
-        // 這裡暫時產生固定營業時段供選擇 (實務上這裡會打API比對 optometrist_schedules 班表)
         timeSelect.innerHTML = '<option value="" disabled selected>請選擇時段</option>';
-        const mockTimes = ['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '19:00', '20:00'];
-        mockTimes.forEach(t => {
-            timeSelect.innerHTML += `<option value="${t}">${t}</option>`;
-        });
+        const mockTimes = ['10:00', '11:00', '14:00', '15:00', '19:00', '20:00'];
+        mockTimes.forEach(t => timeSelect.innerHTML += `<option value="${t}">${t}</option>`);
     }
 
-    // 5. 提交預約
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
         e.preventDefault();
-        
         const bookingNo = 'BK' + Math.floor(Math.random() * 100000);
         const optId = document.getElementById('optometristSelect').value;
         const refId = document.getElementById('referral').value;
 
         try {
-            const { error } = await supabase
-                .from('appointments')
-                .insert([{ 
-                    booking_no: bookingNo,
-                    customer_name: document.getElementById('custName').value,
-                    customer_phone: document.getElementById('custPhone').value,
-                    appointment_date: document.getElementById('bookDate').value,
-                    appointment_time: document.getElementById('bookTime').value + ':00',
-                    optometrist_id: optId ? optId : null,
-                    referral_source_id: refId ? refId : null,
-                    notes: document.getElementById('notes').value
-                }]);
-
+            const { error } = await supabase.from('appointments').insert([{ 
+                booking_no: bookingNo,
+                customer_name: document.getElementById('custName').value,
+                customer_phone: document.getElementById('custPhone').value,
+                appointment_date: document.getElementById('bookDate').value,
+                appointment_time: document.getElementById('bookTime').value + ':00',
+                optometrist_id: optId ? optId : null,
+                referral_source_id: refId ? refId : null,
+                notes: document.getElementById('notes').value
+            }]);
             if (error) throw error;
-            
-            alert(`預約已送出！\n您的預約單號為：${bookingNo}\n我們將儘速安排專人與您聯繫。`);
+            alert(`預約已送出！\n您的預約單號為：${bookingNo}`);
             document.getElementById('bookingForm').reset();
             document.getElementById('bookTime').innerHTML = '<option value="" disabled selected>請先選擇日期</option>';
         } catch (err) {
-            console.error(err);
             alert('預約失敗，請確認資料庫連線。');
         }
     });
 
-    // 6. 查詢預約紀錄並渲染卡片
     async function searchAppointments() {
         const phone = document.getElementById('queryPhone').value;
         if(!phone) return alert('請輸入電話號碼');
         
-        const { data, error } = await supabase
-            .from('appointments')
-            .select('*, optometrists(name)') // Join 驗光師名字
-            .eq('customer_phone', phone)
-            .eq('status', 'pending');
-
+        const { data, error } = await supabase.from('appointments').select('*, optometrists(name)').eq('customer_phone', phone).eq('status', 'pending');
         const resultContainer = document.getElementById('resultCards');
-        resultContainer.innerHTML = ''; // 清空上次結果
-
+        resultContainer.innerHTML = ''; 
         if (error || !data || data.length === 0) {
             resultContainer.classList.add('hidden');
             return alert('查無尚未赴約的紀錄。');
         }
-
         resultContainer.classList.remove('hidden');
         data.forEach(app => {
             const optName = app.optometrists ? app.optometrists.name : '不指定';
-            // 將紀錄動態塞進 HTML 裡，並綁定取消按鈕 onclick
             resultContainer.innerHTML += `
                 <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100 relative mb-3">
                     <span class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">已預約</span>
                     <p class="font-bold text-lg">${app.appointment_date} ${app.appointment_time.substring(0,5)}</p>
-                    <p class="text-sm text-gray-600 mt-1">預約單號：${app.booking_no}</p>
-                    <p class="text-sm text-gray-600">指定驗光師：${optName}</p>
-                    <button onclick="cancelAppointment('${app.id}')" type="button" class="mt-3 w-full border border-red-500 text-red-500 py-2 rounded-lg text-sm font-bold active:bg-red-50 focus:ring-2 focus:ring-red-300">
-                        取消此筆預約
-                    </button>
+                    <p class="text-sm text-gray-600 mt-1">單號：${app.booking_no}</p>
+                    <p class="text-sm text-gray-600">驗光師：${optName}</p>
+                    <button onclick="cancelAppointment('${app.id}')" type="button" class="mt-3 w-full border border-red-500 text-red-500 py-2 rounded-lg text-sm font-bold">取消此筆預約</button>
                 </div>
             `;
         });
     }
 
-    // 7. 取消預約邏輯
     async function cancelAppointment(appId) {
         if(!confirm('您確定要取消這筆預約嗎？')) return;
+        const { error } = await supabase.from('appointments').update({ status: 'cancelled' }).eq('id', appId);
+        if(!error) { alert('預約已取消。'); searchAppointments(); }
+    }
 
-        const { error } = await supabase
-            .from('appointments')
-            .update({ status: 'cancelled' })
-            .eq('id', appId);
+    // ================= 後台邏輯與切換機制 =================
 
-        if(error) {
-            alert('取消失敗，請稍後再試。');
-        } else {
-            alert('預約已成功取消。');
-            searchAppointments(); // 重新整理查詢結果
+    function toggleSection(sectionId) {
+        // 隱藏所有區域
+        ['bookingSection', 'querySection', 'adminSection'].forEach(id => {
+            document.getElementById(id).classList.add('hidden');
+        });
+        // 顯示指定區域
+        document.getElementById(sectionId).classList.remove('hidden');
+        
+        // 依照區域調整上方 Header 的按鈕
+        const navBtn = document.getElementById('navBtn');
+        const headerTitle = document.getElementById('headerTitle');
+        if (sectionId === 'bookingSection') {
+            headerTitle.innerText = '大學眼鏡 / 驗光所';
+            navBtn.innerText = '查詢/取消';
+            navBtn.setAttribute('onclick', "toggleSection('querySection')");
+            navBtn.classList.remove('hidden');
+        } else if (sectionId === 'querySection') {
+            headerTitle.innerText = '查詢預約';
+            navBtn.innerText = '回首頁';
+            navBtn.setAttribute('onclick', "toggleSection('bookingSection')");
+            navBtn.classList.remove('hidden');
+        } else if (sectionId === 'adminSection') {
+            headerTitle.innerText = '後台管理系統';
+            navBtn.classList.add('hidden'); // 後台把右上角按鈕藏起來
         }
     }
 
-    function toggleSection(sectionId) {
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('querySection').classList.add('hidden');
-        document.getElementById(sectionId).classList.remove('hidden');
+    function adminLogin() {
+        const password = prompt('請輸入管理員密碼：(預設測試密碼為 1234)');
+        if (password === '1234') {
+            toggleSection('adminSection');
+            loadAdminAppointments();
+        } else if (password !== null) {
+            alert('密碼錯誤！');
+        }
+    }
+
+    function switchAdminTab(tabId) {
+        document.getElementById('adminAppointments').classList.add('hidden');
+        document.getElementById('adminSettings').classList.add('hidden');
+        document.getElementById(tabId).classList.remove('hidden');
+    }
+
+    async function loadAdminAppointments() {
+        const container = document.getElementById('adminAppointmentCards');
+        container.innerHTML = '<p class="text-sm text-gray-500">讀取中...</p>';
+        
+        // 撈取所有預約資料並按照日期排序
+        const { data, error } = await supabase
+            .from('appointments')
+            .select('*, optometrists(name), referral_sources(name)')
+            .order('appointment_date', { ascending: false });
+
+        if (error || !data) {
+            container.innerHTML = '<p class="text-sm text-red-500">讀取失敗</p>';
+            return;
+        }
+
+        container.innerHTML = '';
+        data.forEach(app => {
+            const optName = app.optometrists ? app.optometrists.name : '不指定';
+            const refName = app.referral_sources ? app.referral_sources.name : '無';
+            
+            // 狀態選單對應的選項
+            const statusOptions = `
+                <option value="pending" ${app.status==='pending'?'selected':''}>未處理/已預約</option>
+                <option value="attended" ${app.status==='attended'?'selected':''}>赴約</option>
+                <option value="completed_sale" ${app.status==='completed_sale'?'selected':''}>締結(成功配鏡)</option>
+                <option value="noshow" ${app.status==='noshow'?'selected':''}>爽約</option>
+                <option value="cancelled" ${app.status==='cancelled'?'selected':''}>取消</option>
+            `;
+
+            // 後台卡片設計
+            container.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200">
+                    <div class="flex justify-between items-start mb-2">
+                        <p class="font-bold">${app.appointment_date} ${app.appointment_time.substring(0,5)}</p>
+                        <select onchange="updateAdminStatus('${app.id}', this.value)" class="text-sm border rounded p-1 bg-gray-50 focus:ring-2 focus:ring-blue-500">
+                            ${statusOptions}
+                        </select>
+                    </div>
+                    <p class="text-sm font-bold text-blue-800">${app.customer_name} <a href="tel:${app.customer_phone}" class="text-blue-500 font-normal underline">${app.customer_phone}</a></p>
+                    <p class="text-xs text-gray-600 mt-1">驗光師：${optName}</p>
+                    <p class="text-xs text-gray-600">來源：${refName}</p>
+                    ${app.notes ? `<p class="text-xs bg-yellow-50 p-2 mt-2 rounded">備註: ${app.notes}</p>` : ''}
+                </div>
+            `;
+        });
+    }
+
+    async function updateAdminStatus(appId, newStatus) {
+        const { error } = await supabase.from('appointments').update({ status: newStatus }).eq('id', appId);
+        if (error) {
+            alert('狀態更新失敗');
+        } else {
+            // 用小提示取代擾人的 alert
+            console.log('狀態更新成功');
+        }
     }
     </script>
 </body>
