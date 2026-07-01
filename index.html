@@ -27,7 +27,9 @@
         <section class="bg-white rounded-xl shadow-xs border border-stone-200 overflow-hidden">
             <div id="intro-tabs" class="flex overflow-x-auto bg-stone-100 border-b border-stone-200 scrollbar-none"></div>
             <div id="intro-content" class="p-4 text-sm leading-relaxed">
-                <div class="text-center py-4 text-stone-400 text-xs"><i class="fa-solid fa-spinner fa-spin mr-1"></i>資料讀取中...</div>
+                <div class="text-center py-4 text-stone-400 text-xs">
+                    <i class="fa-solid fa-spinner fa-spin mr-1"></i>資料連線同步中...
+                </div>
             </div>
         </section>
 
@@ -164,12 +166,13 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        // ⚠️ 請確保這段 KEY 是以 eyJ 開頭的 anon public key！
         const SUPABASE_URL = "https://xwyyptgrzwirygkvhfsr.supabase.co";
-        const SUPABASE_KEY = "sb_publishable_Nb8lbrKVTRuj4wRkTN66kg_Cy1nBNgz";
+        const SUPABASE_KEY = "sb_publishable_Nb8lbrKVTRuj4wRkTN66kg_Cy1nBNgz"; 
         const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         let db = {
-            clinic_info: { name: "大學眼鏡聯合驗光所", title: "載入中...", content: "" },
+            clinic_info: { name: "大學眼鏡聯合驗光所", title: "連線成功，資料準備中", content: "" },
             optometrists: [], partners: [], services: [], schedules: [], appointments: [],
             config: { start_day: 3, end_day: 30, email: "service@eyecenter.com" },
             password: "admin"
@@ -177,35 +180,55 @@
 
         window.onload = async function() {
             await syncWithSupabase();
-            initDateLimit();
         };
 
         async function syncWithSupabase() {
             try {
-                let { data: cfg } = await supabase.from('system_settings').select('*').eq('id', 1).single();
-                if(cfg) db.config = { start_day: cfg.start_day, end_day: cfg.end_day, email: cfg.notify_email };
+                // 安全讀取模式：使用 limit(1) 取代 single() 避免查無資料時直接當機
+                let { data: cfg, error: e1 } = await supabase.from('system_settings').select('*').limit(1);
+                if (e1) throw new Error("讀取設定檔失敗: " + e1.message);
+                if (cfg && cfg.length > 0) db.config = { start_day: cfg[0].start_day, end_day: cfg[0].end_day, email: cfg[0].notify_email };
 
-                let { data: cln } = await supabase.from('clinic_info').select('*').eq('id', 1).single();
-                if(cln) db.clinic_info = { name: cln.name, title: cln.title, content: cln.content };
+                let { data: cln, error: e2 } = await supabase.from('clinic_info').select('*').limit(1);
+                if (e2) throw new Error("讀取診所簡介失敗: " + e2.message);
+                if (cln && cln.length > 0) db.clinic_info = { name: cln[0].name, title: cln[0].title, content: cln[0].content };
 
-                let { data: opts } = await supabase.from('optometrists').select('*');
-                if(opts) db.optometrists = opts;
+                let { data: opts, error: e3 } = await supabase.from('optometrists').select('*');
+                if (e3) throw new Error("讀取驗光師失敗: " + e3.message);
+                if (opts) db.optometrists = opts;
 
-                let { data: pts } = await supabase.from('partners').select('*');
-                if(pts) db.partners = pts.map(p => p.store_name);
+                let { data: pts, error: e4 } = await supabase.from('partners').select('*');
+                if (e4) throw new Error("讀取合作商家失敗: " + e4.message);
+                if (pts) db.partners = pts.map(p => p.store_name);
 
-                let { data: svs } = await supabase.from('services').select('*');
-                if(svs) db.services = svs.map(s => ({ name: s.service_name, duration: s.duration_minutes }));
+                let { data: svs, error: e5 } = await supabase.from('services').select('*');
+                if (e5) throw new Error("讀取服務項目失敗: " + e5.message);
+                if (svs) db.services = svs.map(s => ({ name: s.service_name, duration: s.duration_minutes }));
 
-                let { data: schs } = await supabase.from('schedules').select('*');
-                if(schs) db.schedules = schs.map(s => ({ opt_id: s.optometrist_id, day: s.day_of_week, slot: s.time_slot, max: s.max_pax }));
+                let { data: schs, error: e6 } = await supabase.from('schedules').select('*');
+                if (e6) throw new Error("讀取班表失敗: " + e6.message);
+                if (schs) db.schedules = schs.map(s => ({ opt_id: s.optometrist_id, day: s.day_of_week, slot: s.time_slot, max: s.max_pax }));
 
-                let { data: apps } = await supabase.from('appointments').select('*').order('created_at', { ascending: false });
-                if(apps) db.appointments = apps.map(a => ({ id: a.id, name: a.customer_name, phone: a.customer_phone, partner: a.partner_name, optometrist: a.optometrist_name, date: a.booking_date, time: a.booking_time, services: a.services, notes: a.notes, status: a.status }));
+                let { data: apps, error: e7 } = await supabase.from('appointments').select('*').order('created_at', { ascending: false });
+                if (e7) throw new Error("讀取預約資料失敗: " + e7.message);
+                if (apps) db.appointments = apps.map(a => ({ id: a.id, name: a.customer_name, phone: a.customer_phone, partner: a.partner_name, optometrist: a.optometrist_name, date: a.booking_date, time: a.booking_time, services: a.services, notes: a.notes, status: a.status }));
 
+                // 如果全部成功，啟動畫面渲染
+                initDateLimit();
                 renderFrontend();
                 renderBackend();
-            } catch (e) { console.error("同步失敗:", e); }
+
+            } catch (e) {
+                // 若發生任何中斷錯誤，直接印在畫面上，不讓客人無盡轉圈
+                console.error("同步失敗:", e);
+                document.getElementById('intro-content').innerHTML = `
+                    <div class="text-center py-6">
+                        <div class="text-rose-600 font-bold text-lg mb-2"><i class="fa-solid fa-triangle-exclamation mr-1"></i>資料庫連線異常</div>
+                        <p class="text-xs text-stone-600 mb-1">錯誤原因：${e.message}</p>
+                        <p class="text-[10px] text-stone-400 mt-4 border-t pt-2">💡 請檢查 Supabase URL、KEY 是否正確，或確認 SQL 建置指令是否完整執行。</p>
+                    </div>
+                `;
+            }
         }
 
         function initDateLimit() {
@@ -239,6 +262,7 @@
 
             const sDiv = document.getElementById('booking-services');
             sDiv.innerHTML = '';
+            if (db.services.length === 0) sDiv.innerHTML = '<div class="text-xs text-stone-400">目前尚無服務項目</div>';
             db.services.forEach(s => {
                 sDiv.innerHTML += `<label class="flex items-center space-x-2 text-xs p-1 text-slate-700 cursor-pointer"><input type="checkbox" name="f-serv" value="${s.name}" class="text-teal-600 rounded"><span>${s.name} (${s.duration}分)</span></label>`;
             });
@@ -313,7 +337,7 @@
 
             if (error) alert("預約失敗，請檢查網路。");
             else {
-                alert("預約已送出，我們將儘速安排專人與您電話聯繫確認。如欲取消預約，請點選下方連結辦理。");
+                alert("預約已送出，我們將儘速安排專人與您電話聯繫確認。");
                 document.getElementById('booking-form').reset();
                 await syncWithSupabase();
             }
