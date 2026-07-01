@@ -135,68 +135,106 @@
     </div>
 
     <script>
-        // 1. 初始化 Supabase
-        const SUPABASE_URL = 'https://xwyyptgrzwirygkvhfsr.supabase.co';
-        const SUPABASE_KEY = 'sb_publishable_Nb8lbrKVTRuj4wRkTN66kg_Cy1nBNgz';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = 'https://xwyyptgrzwirygkvhfsr.supabase.co';
+    const SUPABASE_KEY = 'sb_publishable_Nb8lbrKVTRuj4wRkTN66kg_Cy1nBNgz';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // 2. 切換 預約/查詢 頁面
-        function toggleSection(sectionId) {
-            document.getElementById('bookingSection').classList.add('hidden');
-            document.getElementById('querySection').classList.add('hidden');
-            document.getElementById(sectionId).classList.remove('hidden');
-        }
+    // 網頁載入後，立刻從資料庫撈取資料
+    document.addEventListener('DOMContentLoaded', async () => {
+        await loadOptometrists();
+        await loadReferrals();
+    });
 
-        // 3. 表單送出邏輯
-        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
-            e.preventDefault();
+    // 動態載入驗光師
+    async function loadOptometrists() {
+        const { data, error } = await supabase.from('optometrists').select('*').eq('is_active', true);
+        if (error || !data) return console.error('讀取驗光師失敗', error);
+
+        const tabsContainer = document.getElementById('optometristTabs');
+        const selectContainer = document.getElementById('optometristSelect');
+        
+        // 清空寫死的假資料
+        tabsContainer.innerHTML = '';
+        selectContainer.innerHTML = '<option value="">不指定 (安排最快時段)</option>';
+
+        data.forEach(opt => {
+            // 1. 產生簡介書籤 Tabs
+            tabsContainer.innerHTML += `<button class="shrink-0 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium mr-2">${opt.name} 驗光師</button>`;
             
-            // 取得輸入值 (此處為基礎取值範例，實際寫入需對應資料庫 UUID)
-            const name = document.getElementById('custName').value;
-            const phone = document.getElementById('custPhone').value;
-            const date = document.getElementById('bookDate').value;
-            const time = document.getElementById('bookTime').value;
-            
-            // 產生隨機預約單號
-            const bookingNo = 'BK' + Math.floor(Math.random() * 100000);
-
-            try {
-                // 寫入 appointments 表
-                const { data, error } = await supabase
-                    .from('appointments')
-                    .insert([
-                        { 
-                            booking_no: bookingNo,
-                            customer_name: name,
-                            customer_phone: phone,
-                            appointment_date: date,
-                            appointment_time: time + ':00',
-                            status: 'pending'
-                        }
-                    ]);
-
-                if (error) throw error;
-
-                // 溫馨提示
-                alert(`預約已送出！\n您的預約單號為：${bookingNo}\n我們將儘速安排專人與您聯繫。如欲取消，請至「查詢/取消」區塊辦理。`);
-                document.getElementById('bookingForm').reset();
-
-            } catch (err) {
-                console.error('寫入失敗:', err);
-                alert('預約失敗，請稍後再試。');
-            }
+            // 2. 加入下拉選單
+            selectContainer.innerHTML += `<option value="${opt.id}">${opt.name} 驗光師</option>`;
         });
+    }
 
-        // 4. 查詢預約邏輯 (示意)
-        async function searchAppointments() {
-            const phone = document.getElementById('queryPhone').value;
-            if(!phone) {
-                alert('請輸入電話號碼');
-                return;
-            }
-            // 顯示結果區塊 (實務上應使用 Supabase fetch 資料並渲染)
-            document.getElementById('resultCards').classList.remove('hidden');
+    // 動態載入合作行號
+    async function loadReferrals() {
+        const { data, error } = await supabase.from('referral_sources').select('*').eq('is_active', true);
+        if (error || !data) return;
+
+        const referralSelect = document.getElementById('referral');
+        referralSelect.innerHTML = '<option value="">自行預約 (無推薦)</option>';
+        data.forEach(ref => {
+            referralSelect.innerHTML += `<option value="${ref.id}">${ref.name}</option>`;
+        });
+    }
+
+    // 切換頁面
+    function toggleSection(sectionId) {
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('querySection').classList.add('hidden');
+        document.getElementById(sectionId).classList.remove('hidden');
+    }
+
+    // 提交預約表單
+    document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const bookingNo = 'BK' + Math.floor(Math.random() * 100000);
+        const optId = document.getElementById('optometristSelect').value;
+        const refId = document.getElementById('referral').value;
+
+        try {
+            const { error } = await supabase
+                .from('appointments')
+                .insert([{ 
+                    booking_no: bookingNo,
+                    customer_name: document.getElementById('custName').value,
+                    customer_phone: document.getElementById('custPhone').value,
+                    appointment_date: document.getElementById('bookDate').value,
+                    appointment_time: document.getElementById('bookTime').value + ':00',
+                    optometrist_id: optId ? optId : null,
+                    referral_source_id: refId ? refId : null,
+                    notes: document.getElementById('notes').value
+                }]);
+
+            if (error) throw error;
+            
+            alert(`預約已送出！\n您的預約單號為：${bookingNo}\n我們將儘速安排專人與您聯繫。`);
+            document.getElementById('bookingForm').reset();
+        } catch (err) {
+            console.error(err);
+            alert('預約失敗，請確認資料庫 RLS 權限是否已開啟。');
         }
-    </script>
+    });
+
+    // 查詢預約
+    async function searchAppointments() {
+        const phone = document.getElementById('queryPhone').value;
+        if(!phone) return alert('請輸入電話號碼');
+        
+        const { data, error } = await supabase
+            .from('appointments')
+            .select('*')
+            .eq('customer_phone', phone)
+            .eq('status', 'pending');
+
+        if(data && data.length > 0) {
+            alert(`查到 ${data.length} 筆預約！\n預約日期：${data[0].appointment_date}`);
+            // 實務上這裡會渲染卡片並提供取消按鈕，並 update status 為 cancelled
+        } else {
+            alert('查無尚未赴約的紀錄。');
+        }
+    }
+</script>
 </body>
 </html>
