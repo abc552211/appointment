@@ -13,146 +13,144 @@
 </head>
 <body class="bg-slate-50 text-slate-800 font-sans min-h-screen">
 
-    <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl flex flex-col justify-between relative z-0">
+    <div class="max-w-md mx-auto bg-white min-h-screen shadow-xl relative pb-20">
         
-        <div class="w-full flex-1">
-            <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-sm">
-                <h1 class="text-lg font-bold tracking-wide" id="headerTitle">大學眼鏡 / 驗光所</h1>
-                <button id="navBtn" onclick="toggleSection('querySection')" class="text-xs bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/30 transition-all cursor-pointer">查詢/取消</button>
-            </header>
+        <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white p-4 sticky top-0 z-50 flex justify-between items-center shadow-sm">
+            <h1 class="text-lg font-bold tracking-wide" id="headerTitle">大學眼鏡 / 驗光所</h1>
+            <button id="navBtn" onclick="toggleSection('querySection')" class="text-xs bg-white/20 hover:bg-white/30 backdrop-blur-sm px-4 py-1.5 rounded-full border border-white/30 transition-all cursor-pointer relative z-50">查詢/取消</button>
+        </header>
 
-            <main id="bookingSection" class="p-5 space-y-6 block">
-                <section>
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                        <span class="w-1 h-4 bg-blue-600 rounded-full"></span>專業驗光師團隊
-                    </h2>
-                    <div class="flex overflow-x-auto gap-2 no-scrollbar mb-3" id="optometristTabs"></div>
-                    
-                    <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-4 rounded-2xl border border-blue-100/50 flex gap-4 items-center min-h-[100px] shadow-sm">
-                        <div class="w-14 h-14 bg-gradient-to-tr from-blue-400 to-indigo-400 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-xl shadow-inner">師</div>
-                        <div id="optProfileContent" class="space-y-1">
-                            <h3 id="optName" class="font-bold text-slate-800 text-base">載入中...</h3>
-                            <p id="optSpec" class="text-xs text-slate-600 leading-relaxed"></p>
-                            <p id="optGreet" class="text-xs text-blue-600 font-medium italic"></p>
-                        </div>
-                    </div>
-                </section>
-
-                <section>
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
-                        <span class="w-1 h-4 bg-blue-600 rounded-full"></span>立即填寫預約
-                    </h2>
-                    <form id="bookingForm" class="space-y-4">
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">姓名</label>
-                                <input type="text" id="custName" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">手機號碼</label>
-                                <input type="tel" id="custPhone" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1">推薦來源</label>
-                            <select id="referral" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
-                                <option value="">自行預約 (無推薦)</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-2">諮詢項目 (可複選)</label>
-                            <div class="grid grid-cols-2 gap-2 text-sm" id="servicesContainer"></div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1">指定驗光師</label>
-                            <select id="optometristSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
-                                <option value="">不指定 (安排最快時段)</option>
-                            </select>
-                        </div>
-
-                        <div class="grid grid-cols-2 gap-3">
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">預約日期</label>
-                                <input type="date" id="bookDate" required onchange="loadAvailableTimes()" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
-                            </div>
-                            <div>
-                                <label class="block text-xs font-medium text-slate-500 mb-1">預約時段</label>
-                                <select id="bookTime" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
-                                    <option value="" disabled selected>請先選擇日期</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        <div>
-                            <label class="block text-xs font-medium text-slate-500 mb-1">備註留言</label>
-                            <textarea id="notes" rows="2" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all" placeholder="若有特殊需求請在此留言..."></textarea>
-                        </div>
-
-                        <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-blue-200 active:scale-[0.99] transition-all mt-2 cursor-pointer">確認送出預約</button>
-                    </form>
-                </section>
-            </main>
-
-            <main id="querySection" class="p-5 hidden space-y-4">
-                <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                    <label class="block text-xs font-medium text-slate-500">請輸入預約時的手機號碼</label>
-                    <div class="flex gap-2">
-                        <input type="tel" id="queryPhone" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500" placeholder="09XX-XXX-XXX">
-                        <button onclick="searchAppointments()" class="bg-slate-900 text-white px-5 text-sm font-medium rounded-xl active:bg-slate-800 transition-all cursor-pointer">查詢</button>
-                    </div>
-                </div>
-                <div id="resultCards" class="space-y-3 hidden"></div>
-                <button onclick="toggleSection('bookingSection')" class="w-full text-slate-500 text-xs py-3 text-center hover:text-slate-700 transition-all cursor-pointer">← 返回預約首頁</button>
-            </main>
-
-            <main id="adminSection" class="p-4 hidden space-y-4 bg-slate-50">
-                <div class="flex p-1 bg-slate-200/70 rounded-xl gap-1">
-                    <button id="tab-adminAppointments" onclick="switchAdminTab('adminAppointments')" class="flex-1 bg-white text-slate-800 py-2 rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer">預約一覽表</button>
-                    <button id="tab-adminSettings" onclick="switchAdminTab('adminSettings')" class="flex-1 text-slate-500 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer">系統與班表設定</button>
-                </div>
-
-                <div id="adminAppointments" class="space-y-3 block">
-                    <div id="adminAppointmentCards" class="space-y-3">
-                        <p class="text-xs text-slate-400 text-center py-8">讀取中...</p>
-                    </div>
-                </div>
-
-                <div id="adminSettings" class="space-y-4 hidden">
-                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                        <h3 class="font-bold text-xs text-indigo-600 uppercase tracking-wider">預約天數開放設定</h3>
-                        <div class="flex gap-2 items-center text-sm text-slate-600">
-                            <span>開放未來</span>
-                            <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="3">
-                            <span>至</span>
-                            <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="30">
-                            <span>天</span>
-                        </div>
-                        <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存設定</button>
-                    </div>
-
-                    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
-                        <h3 class="font-bold text-xs text-indigo-600 uppercase tracking-wider">彈性排班機制</h3>
-                        <select class="w-full border border-slate-200 rounded-xl p-2 text-xs bg-white outline-none">
-                            <option>王大明 驗光師</option>
-                        </select>
-                        <div class="flex gap-2 items-center text-sm text-slate-600">
-                            <span>週一上限</span>
-                            <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="10">
-                            <span>人</span>
-                        </div>
-                        <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存班表</button>
-                    </div>
-                </div>
+        <div id="bookingSection" class="p-5 space-y-6 block">
+            <section>
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                    <span class="w-1 h-4 bg-blue-600 rounded-full"></span>專業驗光師團隊
+                </h2>
+                <div class="flex overflow-x-auto gap-2 no-scrollbar mb-3" id="optometristTabs"></div>
                 
-                <button onclick="toggleSection('bookingSection')" class="w-full text-rose-600 text-xs py-3 border border-rose-100 rounded-xl bg-rose-50/50 hover:bg-rose-50 font-medium transition-all cursor-pointer">登出並返回前台</button>
-            </main>
+                <div class="bg-gradient-to-br from-blue-50 to-indigo-50/50 p-4 rounded-2xl border border-blue-100/50 flex gap-4 items-center min-h-[100px] shadow-sm">
+                    <div class="w-14 h-14 bg-gradient-to-tr from-blue-400 to-indigo-400 rounded-full shrink-0 flex items-center justify-center text-white font-bold text-xl shadow-inner">師</div>
+                    <div id="optProfileContent" class="space-y-1">
+                        <h3 id="optName" class="font-bold text-slate-800 text-base">載入中...</h3>
+                        <p id="optSpec" class="text-xs text-slate-600 leading-relaxed"></p>
+                        <p id="optGreet" class="text-xs text-blue-600 font-medium italic"></p>
+                    </div>
+                </div>
+            </section>
+
+            <section>
+                <h2 class="text-sm font-bold uppercase tracking-wider text-slate-400 mb-4 flex items-center gap-2">
+                    <span class="w-1 h-4 bg-blue-600 rounded-full"></span>立即填寫預約
+                </h2>
+                <form id="bookingForm" class="space-y-4">
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 mb-1">姓名</label>
+                            <input type="text" id="custName" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 mb-1">手機號碼</label>
+                            <input type="tel" id="custPhone" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">推薦來源</label>
+                        <select id="referral" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                            <option value="">自行預約 (無推薦)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-2">諮詢項目 (可複選)</label>
+                        <div class="grid grid-cols-2 gap-2 text-sm" id="servicesContainer"></div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">指定驗光師</label>
+                        <select id="optometristSelect" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                            <option value="">不指定 (安排最快時段)</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 mb-1">預約日期</label>
+                            <input type="date" id="bookDate" required onchange="loadAvailableTimes()" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-500 mb-1">預約時段</label>
+                            <select id="bookTime" required class="w-full border border-slate-200 rounded-xl p-2.5 text-sm bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all">
+                                <option value="" disabled selected>請先選擇日期</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-medium text-slate-500 mb-1">備註留言</label>
+                        <textarea id="notes" rows="2" class="w-full border border-slate-200 rounded-xl p-2.5 text-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-100 outline-none transition-all" placeholder="若有特殊需求請在此留言..."></textarea>
+                    </div>
+
+                    <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold py-3.5 rounded-xl shadow-md shadow-blue-200 active:scale-[0.99] transition-all mt-2 cursor-pointer">確認送出預約</button>
+                </form>
+            </section>
         </div>
 
-        <footer class="w-full p-4 text-center border-t border-slate-100 bg-white sticky bottom-0 z-50">
-            <button onclick="adminLogin()" class="text-[11px] text-slate-300 hover:text-slate-400 transition-all tracking-wider cursor-pointer">管理人員系統登入</button>
+        <div id="querySection" class="p-5 hidden space-y-4">
+            <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                <label class="block text-xs font-medium text-slate-500">請輸入預約時的手機號碼</label>
+                <div class="flex gap-2">
+                    <input type="tel" id="queryPhone" class="flex-1 border border-slate-200 rounded-xl p-2.5 text-sm outline-none focus:border-blue-500" placeholder="09XX-XXX-XXX">
+                    <button onclick="searchAppointments()" class="bg-slate-900 text-white px-5 text-sm font-medium rounded-xl active:bg-slate-800 transition-all cursor-pointer">查詢</button>
+                </div>
+            </div>
+            <div id="resultCards" class="space-y-3 hidden"></div>
+            <button onclick="toggleSection('bookingSection')" class="w-full text-slate-500 text-xs py-3 text-center hover:text-slate-700 transition-all cursor-pointer">← 返回預約首頁</button>
+        </div>
+
+        <div id="adminSection" class="p-4 hidden space-y-4 bg-slate-50 min-h-[calc(100vh-100px)]">
+            <div class="flex p-1 bg-slate-200/70 rounded-xl gap-1">
+                <button id="tab-adminAppointments" onclick="switchAdminTab('adminAppointments')" class="flex-1 bg-white text-slate-800 py-2 rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer">預約一覽表</button>
+                <button id="tab-adminSettings" onclick="switchAdminTab('adminSettings')" class="flex-1 text-slate-500 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer">系統與班表設定</button>
+            </div>
+
+            <div id="adminAppointments" class="space-y-3 block">
+                <div id="adminAppointmentCards" class="space-y-3">
+                    <p class="text-xs text-slate-400 text-center py-8">讀取中...</p>
+                </div>
+            </div>
+
+            <div id="adminSettings" class="space-y-4 hidden">
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                    <h3 class="font-bold text-xs text-indigo-600 uppercase tracking-wider">預約天數開放設定</h3>
+                    <div class="flex gap-2 items-center text-sm text-slate-600">
+                        <span>開放未來</span>
+                        <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="3">
+                        <span>至</span>
+                        <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="30">
+                        <span>天</span>
+                    </div>
+                    <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存設定</button>
+                </div>
+
+                <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm space-y-3">
+                    <h3 class="font-bold text-xs text-indigo-600 uppercase tracking-wider">彈性排班機制</h3>
+                    <select class="w-full border border-slate-200 rounded-xl p-2 text-xs bg-white outline-none">
+                        <option>王大明 驗光師</option>
+                    </select>
+                    <div class="flex gap-2 items-center text-sm text-slate-600">
+                        <span>週一上限</span>
+                        <input type="number" class="w-14 border border-slate-200 rounded-lg p-1.5 text-center text-sm outline-none focus:border-blue-500" value="10">
+                        <span>人</span>
+                    </div>
+                    <button class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold py-2 rounded-xl transition-all cursor-pointer">儲存班表</button>
+                </div>
+            </div>
+            
+            <button onclick="toggleSection('bookingSection')" class="w-full text-rose-600 text-xs py-3 border border-rose-100 rounded-xl bg-rose-50/50 hover:bg-rose-50 font-medium transition-all cursor-pointer">登出並返回前台</button>
+        </div>
+
+        <footer class="absolute bottom-0 left-0 w-full p-4 text-center border-t border-slate-100 bg-white z-40">
+            <button onclick="adminLogin()" class="text-[11px] text-slate-300 hover:text-slate-400 transition-all tracking-wider cursor-pointer relative z-50 py-1 px-3">管理人員系統登入</button>
         </footer>
 
     </div>
@@ -309,17 +307,15 @@
         if(!error) { alert('預約已取消。'); searchAppointments(); }
     }
 
-    // 修正：全面改用類名與實體控制顯示，完全阻斷隱形區塊擋住點擊的 Bug
+    // 使用 display 屬性徹底阻斷切換時的點擊覆蓋問題
     function toggleSection(sectionId) {
         ['bookingSection', 'querySection', 'adminSection'].forEach(id => {
             const section = document.getElementById(id);
-            section.classList.add('hidden');
-            section.classList.remove('block');
+            section.style.display = 'none';
         });
         
         const targetSection = document.getElementById(sectionId);
-        targetSection.classList.remove('hidden');
-        targetSection.classList.add('block');
+        targetSection.style.display = 'block';
         
         const navBtn = document.getElementById('navBtn');
         const headerTitle = document.getElementById('headerTitle');
@@ -327,30 +323,27 @@
             headerTitle.innerText = '大學眼鏡 / 驗光所';
             navBtn.innerText = '查詢/取消';
             navBtn.setAttribute('onclick', "toggleSection('querySection')");
-            navBtn.classList.remove('hidden');
+            navBtn.style.display = 'block';
         } else if (sectionId === 'querySection') {
             headerTitle.innerText = '查詢預約';
             navBtn.innerText = '回首頁';
             navBtn.setAttribute('onclick', "toggleSection('bookingSection')");
-            navBtn.classList.remove('hidden');
+            navBtn.style.display = 'block';
         } else if (sectionId === 'adminSection') {
             headerTitle.innerText = '後台管理系統';
-            navBtn.classList.add('hidden');
+            navBtn.style.display = 'none';
         }
         window.scrollTo(0,0);
     }
 
-    // 修正：異步登入提示，防止主畫面失去點擊回應
     function adminLogin() {
-        setTimeout(() => {
-            const password = prompt('請輸入管理員密碼：(預設測試密碼為 1234)');
-            if (password === '1234') {
-                toggleSection('adminSection');
-                loadAdminAppointments();
-            } else if (password !== null) {
-                alert('密碼錯誤！');
-            }
-        }, 50);
+        const password = prompt('請輸入管理員密碼：(預設測試密碼為 1234)');
+        if (password === '1234') {
+            toggleSection('adminSection');
+            loadAdminAppointments();
+        } else if (password !== null) {
+            alert('密碼錯誤！');
+        }
     }
 
     function switchAdminTab(tabId) {
@@ -359,12 +352,10 @@
             const block = document.getElementById(t);
             const btn = document.getElementById('tab-' + t);
             if(t === tabId) {
-                block.classList.remove('hidden');
-                block.classList.add('block');
+                block.style.display = 'block';
                 if(btn) btn.className = "flex-1 bg-white text-slate-800 py-2 rounded-lg text-xs font-bold shadow-sm transition-all cursor-pointer";
             } else {
-                block.classList.add('hidden');
-                block.classList.remove('block');
+                block.style.display = 'none';
                 if(btn) btn.className = "flex-1 text-slate-500 py-2 rounded-lg text-xs font-bold transition-all cursor-pointer";
             }
         });
