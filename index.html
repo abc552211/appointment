@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>專業驗光所預約系統</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* 自訂主題色：木質溫馨與專業藍綠 */
+        :root {
+            --color-primary: #0d9488; /* 專業藍綠 */
+            --color-primary-dark: #0f766e;
+            --color-bg-warm: #fdfbf7; /* 暖米色背景 */
+            --color-wood: #78350f; /* 深褐木質調 */
+        }
+        body {
+            background-color: var(--color-bg-warm);
+            font-family: system-ui, -apple-system, sans-serif;
+        }
+    </style>
+</head>
+<body class="text-slate-800 min-h-screen flex flex-col justify-between">
+
+    <main id="frontend-view" class="max-w-4xl mx-auto px-4 py-8 w-full space-y-12">
+        
+        <header class="text-center space-y-2">
+            <h1 class="text-3xl font-bold text-teal-800 track-wide">專業驗光預約服務</h1>
+            <p class="text-amber-800 text-sm font-medium">守護您的靈魂之窗 ‧ 提供最溫馨的客製化驗配體驗</p>
+        </header>
+
+        <section class="bg-white rounded-2xl shadow-sm border border-stone-200/60 overflow-hidden">
+            <div id="intro-tabs" class="flex flex-wrap bg-stone-100 border-b border-stone-200">
+                <button onclick="switchTab('brand-tab')" id="btn-brand-tab" class="tab-btn px-6 py-3.5 font-medium text-sm transition-all border-b-2 border-teal-600 text-teal-700 bg-white">
+                    <i class="fa-solid fa-hospital-user mr-2"></i>本院與大學眼鏡簡介
+                </button>
+            </div>
+            
+            <div id="intro-content" class="p-6 md:p-8">
+                </div>
+        </section>
+
+        <section class="grid md:grid-cols-3 gap-8">
+            <div class="md:col-span-2 bg-white p-6 md:p-8 rounded-2xl shadow-sm border border-stone-200/60 space-y-6">
+                <h2 class="text-xl font-bold text-slate-800 flex items-center border-b pb-3 border-stone-100">
+                    <i class="fa-solid fa-calendar-check text-teal-600 mr-2"></i>填寫預約資料
+                </h2>
+                <form id="booking-form" onsubmit="handleBooking(event)" class="space-y-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">姓名 <span class="text-rose-500">*</span></label>
+                            <input type="text" id="cust-name" required class="w-full px-4 py-2 rounded-lg border border-stone-300 focus:outline-none focus:border-teal-500" placeholder="請輸入您的姓名">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">手機號碼 <span class="text-rose-500">*</span></label>
+                            <input type="tel" id="cust-phone" required pattern="[0-9]{10}" class="w-full px-4 py-2 rounded-lg border border-stone-300 focus:outline-none focus:border-teal-500" placeholder="0912345678">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">推薦來源行號 <span class="text-rose-500">*</span></label>
+                            <select id="booking-partner" required class="w-full px-4 py-2 rounded-lg border border-stone-300 bg-white focus:outline-none focus:border-teal-500">
+                                </select>
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">指定驗光人員</label>
+                            <select id="booking-optometrist" class="w-full px-4 py-2 rounded-lg border border-stone-300 bg-white focus:outline-none focus:border-teal-500">
+                                <option value="">不指定（由系統安排）</option>
+                                </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-medium text-slate-600 mb-2">想諮詢的項目 (可複選) <span class="text-rose-500">*</span></label>
+                        <div id="booking-services" class="grid grid-cols-2 gap-2 bg-stone-50 p-3 rounded-lg border border-stone-200">
+                            </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">期望聯絡日期與時段 <span class="text-rose-500">*</span></label>
+                            <input type="text" id="cust-time-slot" required class="w-full px-4 py-2 rounded-lg border border-stone-300 focus:outline-none focus:border-teal-500" placeholder="例：下週三下午、14:00左右">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-slate-600 mb-1">備註說明</label>
+                            <input type="text" id="cust-notes" class="w-full px-4 py-2 rounded-lg border border-stone-300 focus:outline-none focus:border-teal-500" placeholder="如有特殊需求請註記">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="w-full bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 rounded-lg shadow-sm transition-colors cursor-pointer">
+                        送出預約申請
+                    </button>
+                </form>
+            </div>
+
+            <div class="bg-amber-50/60 p-6 rounded-2xl border border-amber-200/70 flex flex-col justify-between space-y-4">
+                <div>
+                    <h3 class="text-lg font-bold text-amber-900 flex items-center mb-2">
+                        <i class="fa-solid fa-calendar-xmark mr-2 text-amber-700"></i>取消預約
+                    </h3>
+                    <p class="text-xs text-amber-800/80 leading-relaxed">
+                        已完成預約欲修改或取消？請在下方輸入填寫的手機號碼，即可查詢並取消未到診的預約。
+                    </p>
+                </div>
+                <div class="space-y-2 pt-4 border-t border-amber-200">
+                    <label class="block text-xs font-medium text-amber-900">輸入預約手機號碼</label>
+                    <input type="tel" id="cancel-phone" placeholder="0912345678" class="w-full px-3 py-2 text-sm bg-white rounded-lg border border-amber-300 focus:outline-none focus:border-amber-600">
+                    <button onclick="handleCancelBooking()" class="w-full bg-amber-700 hover:bg-amber-800 text-white text-sm font-medium py-2 rounded-lg transition-colors cursor-pointer">
+                        查詢並取消預約
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <main id="backend-view" class="hidden max-w-6xl mx-auto px-4 py-8 w-full space-y-8">
+        <header class="flex justify-between items-center border-b pb-4 border-stone-200">
+            <div>
+                <h1 class="text-2xl font-bold text-slate-800">管理維護後台</h1>
+                <p class="text-sm text-slate-500">控管預約排班、檢視轉介數據與客戶狀態變更</p>
+            </div>
+            <button onclick="logoutBackend()" class="px-4 py-2 bg-stone-200 hover:bg-stone-300 text-slate-700 rounded-lg text-sm transition-colors cursor-pointer">
+                安全登出
+            </button>
+        </header>
+
+        <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-xs space-y-6 lg:col-span-1">
+                <h2 class="text-md font-bold text-slate-700 border-b pb-2 flex items-center"><i class="fa-solid fa-sliders mr-2 text-teal-600"></i>系統參數設定</h2>
+                
+                <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-slate-600">開放預約天數範圍</label>
+                    <div class="flex items-center space-x-2">
+                        <span class="text-xs text-slate-400">未來</span>
+                        <input type="number" id="cfg-start-day" value="3" class="w-16 px-2 py-1 text-sm border rounded text-center">
+                        <span class="text-xs text-slate-400">天至</span>
+                        <input type="number" id="cfg-end-day" value="30" class="w-16 px-2 py-1 text-sm border rounded text-center">
+                        <span class="text-xs text-slate-400">天</span>
+                    </div>
+                </div>
+
+                <div class="space-y-1">
+                    <label class="block text-xs font-semibold text-slate-600">連動指定通知信箱 (Mail)</label>
+                    <input type="email" id="cfg-email" value="service@eyecenter.com" class="w-full px-3 py-1.5 text-sm border rounded">
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-600">服務項目與耗時限制 (分鐘)</label>
+                    <div id="cfg-services-list" class="space-y-1.5 max-h-32 overflow-y-auto pr-1">
+                        </div>
+                </div>
+
+                <div class="space-y-2">
+                    <label class="block text-xs font-semibold text-slate-600">每週排班人數上限設定</label>
+                    <div id="cfg-schedule-list" class="space-y-1 max-h-40 overflow-y-auto pr-1 text-xs">
+                        </div>
+                </div>
+
+                <button onclick="saveSystemSettings()" class="w-full bg-teal-600 hover:bg-teal-700 text-white text-sm py-2 rounded font-medium transition-colors cursor-pointer">
+                    儲存參數設定
+                </button>
+            </div>
+
+            <div class="lg:col-span-2 space-y-6">
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-xs space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h2 class="text-md font-bold text-slate-700 flex items-center"><i class="fa-solid fa-handshake mr-2 text-teal-600"></i>周邊推薦行號管理</h2>
+                        <button onclick="addPartnerPrompt()" class="text-xs bg-teal-50 text-teal-700 border border-teal-200 px-2.5 py-1 rounded hover:bg-teal-100 transition-colors cursor-pointer">+ 新增行號</button>
+                    </div>
+                    <div id="backend-partners-list" class="grid grid-cols-2 md:grid-cols-3 gap-2 text-xs">
+                        </div>
+                </div>
+
+                <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-xs space-y-4">
+                    <div class="flex justify-between items-center border-b pb-2">
+                        <h2 class="text-md font-bold text-slate-700 flex items-center"><i class="fa-solid fa-id-card-clip mr-2 text-teal-600"></i>前端簡介與驗光師維護</h2>
+                        <button onclick="addOptometristPrompt()" class="text-xs bg-teal-50 text-teal-700 border border-teal-200 px-2.5 py-1 rounded hover:bg-teal-100 transition-colors cursor-pointer">+ 新增驗光師</button>
+                    </div>
+                    <div id="backend-intros-list" class="space-y-2 max-h-48 overflow-y-auto pr-1">
+                        </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="grid grid-cols-1 lg:grid-cols-4 gap-6">
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-xs lg:col-span-1 space-y-4">
+                <h2 class="text-md font-bold text-slate-700 border-b pb-2 flex items-center"><i class="fa-solid fa-chart-pie mr-2 text-teal-600"></i>營運成效統計</h2>
+                <div class="grid grid-cols-2 gap-2 text-center">
+                    <div class="bg-emerald-50 p-2 rounded border border-emerald-100"><div class="text-xs text-emerald-700">赴約 / 締結</div><div id="stat-success" class="text-lg font-bold text-emerald-800">0</div></div>
+                    <div class="bg-rose-50 p-2 rounded border border-rose-100"><div class="text-xs text-rose-700">爽約 / 取消</div><div id="stat-fail" class="text-lg font-bold text-rose-800">0</div></div>
+                </div>
+                <div>
+                    <h3 class="text-xs font-semibold text-slate-500 mb-1.5">周邊商圈推薦排行</h3>
+                    <div id="stat-partners-rank" class="space-y-1 text-xs text-slate-600">
+                        </div>
+                </div>
+            </div>
+
+            <div class="bg-white p-6 rounded-xl border border-stone-200 shadow-xs lg:col-span-3 space-y-4">
+                <h2 class="text-md font-bold text-slate-700 border-b pb-2 flex items-center"><i class="fa-solid fa-list-check mr-2 text-teal-600"></i>預約客戶狀態一覽表</h2>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr class="bg-stone-50 border-b border-stone-200 text-slate-600 font-semibold">
+                                <th class="p-2.5">客戶資訊</th>
+                                <th class="p-2.5">預約時間/時段</th>
+                                <th class="p-2.5">諮詢項目/指定人員</th>
+                                <th class="p-2.5">推薦來源</th>
+                                <th class="p-2.5">狀態註記與變更</th>
+                            </tr>
+                        </thead>
+                        <tbody id="backend-appointments-table" class="divide-y divide-stone-100 text-slate-700">
+                            </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="bg-stone-100 border-t border-stone-200 py-4 px-6 flex justify-between items-center text-xs text-stone-500 mt-12">
+        <div>© 2026 專業驗光所預約系統. All Rights Reserved.</div>
+        <div>
+            <button onclick="openLoginPrompt()" id="btn-goto-backend" class="text-stone-400 hover:text-stone-600 transition-colors text-[10px] cursor-pointer">
+                <i class="fa-solid fa-gear"></i> 系統維護
+            </button>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // 🔗 初始化您的 Supabase 連線資訊
+        const SUPABASE_URL = "https://xwyyptgrzwirygkvhfsr.supabase.co";
+        const SUPABASE_KEY = "sb_publishable_Nb8lbrKVTRuj4wRkTN66kg_Cy1nBNgz";
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // 💾 初始模擬資料庫狀態 (保留架構，可由前端進行動態編輯)
+        let db = {
+            clinic_info: { brand_name: "大學眼鏡聯合驗光所", title: "專業與溫馨交織的守護理念", content: "我們引引全套高階數位化驗光設備，與大學眼鏡技術同步。致力於提供精準的多焦鏡片驗配、學童近視控制與精緻配鏡服務。這裡不僅提供最客觀與專業的視力醫療轉介，更有如家一般的調鏡空間與溫暖諮詢。" },
+            optometrists: [
+                { id: 1, name: "陳哲賢 驗光師", licenses: ["國家認證特考合格驗光師", "中山醫學大學視光學系"], specialties: ["成人多焦鏡片精密驗配", "學童近視控制諮詢"], greeting: "用專業為您把關視野，用溫度拉近與美景的距離。" },
+                { id: 2, name: "林雅婷 驗光師", licenses: ["國家認證高考合格驗光師", "視光學會特聘講師"], specialties: ["雙眼視覺機能檢查", "高階隱形眼鏡驗配"], greeting: "眼睛的舒適度需要量身打造，歡迎來找我聊聊您的用眼習慣。" }
+            ],
+            partners: ["正康大藥局", "悅讀書局", "美而美活力早餐", "健康生活有機坊", "鄰里社區發展協會"],
+            services: [
+                { name: "視力檢查與深度驗光", duration: 45 },
+                { name: "配鏡與多焦鏡片諮詢", duration: 60 },
+                { name: "隱形眼鏡配戴評估", duration: 30 },
+                { name: "鏡架調整與舒適保養", duration: 20 }
+            ],
+            system_settings: {
+                start_day: 3,
+                end_day: 30,
+                email: "notify@eyecenter.com",
+                schedule: { "1": 5, "2": 5, "3": 5, "4": 5, "5": 5, "6": 10, "0": 0 }
+            },
+            appointments: [
+                { id: 1001, name: "王小明", phone: "0912345678", partner: "正康大藥局", optometrist: "陳哲賢 驗光師", services: ["視力檢查與深度驗光"], datetime: "隨時聯繫", notes: "最近看電腦容易疲勞", status: "赴約" },
+                { id: 1002, name: "李大同", phone: "0987654321", partner: "悅讀書局", optometrist: "不指定", services: ["配鏡與多焦鏡片諮詢"], datetime: "平日晚上", notes: "想看多焦老花鏡片", status: "待聯繫" }
+            ],
+            backend_password: "admin"
+        };
+
+        // 🚀 頁面初始化載入
+        window.onload = function() {
+            renderFrontend();
+            renderBackend();
+        };
+
+        // ================= 前台渲染與控制邏輯 =================
+        function renderFrontend() {
+            const tabsContainer = document.getElementById('intro-tabs');
+            tabsContainer.innerHTML = `<button onclick="switchTab('brand-tab')" id="btn-brand-tab" class="tab-btn px-4 py-2.5 font-medium text-xs md:text-sm transition-all text-teal-700 bg-white border-b-2 border-teal-600">
+                <i class="fa-solid fa-hospital-user mr-1.5"></i>${db.clinic_info.brand_name}
+            </button>`;
+            
+            db.optometrists.forEach((opt, idx) => {
+                tabsContainer.innerHTML += `<button onclick="switchTab('opt-tab-${opt.id}')" id="btn-opt-tab-${opt.id}" class="tab-btn px-4 py-2.5 font-medium text-xs md:text-sm transition-all text-stone-600 hover:text-teal-700">
+                    <i class="fa-solid fa-user-doctor mr-1.5"></i>${opt.name}
+                </button>`;
+            });
+
+            switchTab('brand-tab');
+
+            const partnerSelect = document.getElementById('booking-partner');
+            partnerSelect.innerHTML = '<option value="">-- 請選擇推薦介紹的周邊商家 --</option>';
+            db.partners.forEach(p => {
+                partnerSelect.innerHTML += `<option value="${p}">${p}</option>`;
+            });
+
+            const optSelect = document.getElementById('booking-optometrist');
+            optSelect.innerHTML = '<option value="不指定">不指定（由系統安排）</option>';
+            db.optometrists.forEach(opt => {
+                optSelect.innerHTML += `<option value="${opt.name}">${opt.name}</option>`;
+            });
+
+            const servicesContainer = document.getElementById('booking-services');
+            servicesContainer.innerHTML = '';
+            db.services.forEach((s, idx) => {
+                servicesContainer.innerHTML += `
+                    <label class="flex items-center space-x-2 text-xs text-slate-700 cursor-pointer p-1 hover:bg-stone-100 rounded">
+                        <input type="checkbox" name="front-services" value="${s.name}" class="text-teal-600 rounded">
+                        <span>${s.name} (${s.duration}分)</span>
+                    </label>
+                `;
+            });
+        }
+
+        function switchTab(target) {
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('text-teal-700', 'bg-white', 'border-b-2', 'border-teal-600');
+                btn.classList.add('text-stone-600');
+            });
+
+            const contentDiv = document.getElementById('intro-content');
+
+            if (target === 'brand-tab') {
+                document.getElementById('btn-brand-tab').classList.add('text-teal-700', 'bg-white', 'border-b-2', 'border-teal-600');
+                contentDiv.innerHTML = `
+                    <div class="space-y-3">
+                        <h3 class="text-xl font-bold text-teal-900">${db.clinic_info.title}</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed whitespace-pre-line">${db.clinic_info.content}</p>
+                    </div>
+                `;
+            } else {
+                const optId = parseInt(target.replace('opt-tab-', ''));
+                const opt = db.optometrists.find(o => o.id === optId);
+                document.getElementById(`btn-opt-tab-${optId}`).classList.add('text-teal-700', 'bg-white', 'border-b-2', 'border-teal-600');
+                
+                let licensesHtml = opt.licenses.map(l => `<span class="bg-stone-100 text-stone-700 px-2 py-0.5 rounded text-xs">${l}</span>`).join(' ');
+                let specialtiesHtml = opt.specialties.map(s => `<span class="bg-teal-50 text-teal-700 border border-teal-100 px-2 py-0.5 rounded text-xs"># ${s}</span>`).join(' ');
+
+                contentDiv.innerHTML = `
+                    <div class="flex flex-col md:flex-row gap-6 items-start">
+                        <div class="bg-stone-100 w-24 h-24 rounded-full flex items-center justify-center text-stone-400 shrink-0 border border-stone-200">
+                            <i class="fa-solid fa-user-tie text-4xl"></i>
+                        </div>
+                        <div class="space-y-3 w-full">
+                            <div>
+                                <h3 class="text-lg font-bold text-slate-800">${opt.name}</h3>
+                                <div class="flex flex-wrap gap-1 mt-1">${licensesHtml}</div>
+                            </div>
+                            <div class="space-y-1">
+                                <h4 class="text-xs font-semibold text-slate-500">主修與核心專長</h4>
+                                <div class="flex flex-wrap gap-1">${specialtiesHtml}</div>
+                            </div>
+                            <blockquote class="border-l-4 border-amber-500 bg-amber-50/50 p-2.5 rounded-r text-sm text-amber-900 italic">
+                                "${opt.greeting}"
+                            </blockquote>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function handleBooking(e) {
+            e.preventDefault();
+            const checkedServices = [];
+            document.querySelectorAll('input[name="front-services"]:checked').forEach(cb => checkedServices.push(cb.value));
+            
+            if (checkedServices.length === 0) {
+                alert("請至少勾選一項想諮詢的項目");
+                return;
+            }
+
+            const newApp = {
+                id: Date.now(),
+                name: document.getElementById('cust-name').value,
+                phone: document.getElementById('cust-phone').value,
+                partner: document.getElementById('booking-partner').value,
+                optometrist: document.getElementById('booking-optometrist').value,
+                services: checkedServices,
+                datetime: document.getElementById('cust-time-slot').value,
+                notes: document.getElementById('cust-notes').value,
+                status: "待聯繫"
+            };
+
+            db.appointments.push(newApp);
+            alert(`【預約已送出】\n將有專人聯繫您安排確切時段。如欲取消預約，可隨時於右側/下方輸入電話辦理。`);
+            console.log(`[系統通知信] 已自動派送至指定信箱: ${db.system_settings.email}`);
+
+            document.getElementById('booking-form').reset();
+            renderBackend();
+        }
+
+        function handleCancelBooking() {
+            const phone = document.getElementById('cancel-phone').value.trim();
+            if (!phone) { alert("請輸入預約時的手機號碼"); return; }
+
+            const apps = db.appointments.filter(a => a.phone === phone && a.status === "待聯繫");
+            if (apps.length === 0) {
+                alert("查無此電話之待處理預約。");
+                return;
+            }
+
+            if (confirm(`確認要取消預約嗎？`)) {
+                apps.forEach(a => {
+                    a.status = "取消";
+                });
+                alert("已成功為您取消預約申請。");
+                document.getElementById('cancel-phone').value = '';
+                renderBackend();
+            }
+        }
+
+        // ================= 後台維護與密碼驗證邏輯 =================
+        function openLoginPrompt() {
+            const pwd = prompt("請輸入系統維護管理密碼：");
+            if (pwd === null) return;
+            if (pwd === db.backend_password) {
+                document.getElementById('frontend-view').classList.add('hidden');
+                document.getElementById('backend-view').classList.remove('hidden');
+                window.scrollTo(0,0);
+            } else {
+                alert("密碼不正確，拒絕存取。");
+            }
+        }
+
+        function logoutBackend() {
+            document.getElementById('backend-view').classList.add('hidden');
+            document.getElementById('frontend-view').classList.remove('hidden');
+            window.scrollTo(0,0);
+        }
+
+        function renderBackend() {
+            document.getElementById('cfg-start-day').value = db.system_settings.start_day;
+            document.getElementById('cfg-end-day').value = db.system_settings.end_day;
+            document.getElementById('cfg-email').value = db.system_settings.email;
+
+            const sList = document.getElementById('cfg-services-list');
+            sList.innerHTML = '';
+            db.services.forEach((s, idx) => {
+                sList.innerHTML += `
+                    <div class="flex justify-between items-center bg-stone-50 p-1.5 rounded text-xs border border-stone-200">
+                        <span class="truncate">${s.name}</span>
+                        <input type="number" value="${s.duration}" onchange="db.services[${idx}].duration = parseInt(this.value); renderFrontend();" class="w-12 text-center border bg-white rounded py-0.5">
+                    </div>
+                `;
+            });
+
+            const dayNames = ["週日", "週一", "週二", "週三", "週四", "週五", "週六"];
+            const schedList = document.getElementById('cfg-schedule-list');
+            schedList.innerHTML = '';
+            for (let i = 1; i <= 6; i++) { appendSchedRow(i); }
+            appendSchedRow(0);
+            
+            function appendSchedRow(dayNum) {
+                schedList.innerHTML += `
+                    <div class="flex items-center justify-between p-1 bg-stone-50 rounded mb-1">
+                        <span>${dayNames[dayNum]}</span>
+                        <div class="flex items-center space-x-1">
+                            <span class="text-[10px] text-slate-400">人數上限:</span>
+                            <input type="number" value="${db.system_settings.schedule[dayNum]}" onchange="db.system_settings.schedule[${dayNum}] = parseInt(this.value);" class="w-10 border text-center rounded bg-white">
+                        </div>
+                    </div>
+                `;
+            }
+
+            const pList = document.getElementById('backend-partners-list');
+            pList.innerHTML = '';
+            db.partners.forEach((p, idx) => {
+                pList.innerHTML += `
+                    <div class="bg-stone-100 p-2 rounded flex justify-between items-center">
+                        <span class="font-medium text-slate-700">${p}</span>
+                        <button onclick="deletePartner(${idx})" class="text-rose-500 hover:text-rose-700 ml-1 cursor-pointer"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
+                `;
+            });
+
+            const introList = document.getElementById('backend-intros-list');
+            introList.innerHTML = `
+                <div class="p-3 bg-stone-50 border rounded text-xs space-y-1">
+                    <div class="font-bold text-teal-800">[主標題編輯] ${db.clinic_info.brand_name}</div>
+                    <input type="text" value="${db.clinic_info.title}" onchange="db.clinic_info.title = this.value; renderFrontend();" class="w-full border p-1 bg-white rounded mb-1">
+                    <textarea onchange="db.clinic_info.content = this.value; renderFrontend();" class="w-full border p-1 bg-white rounded h-12">${db.clinic_info.content}</textarea>
+                </div>
+            `;
+            db.optometrists.forEach((opt, idx) => {
+                introList.innerHTML += `
+                    <div class="p-3 bg-stone-50 border rounded text-xs space-y-1 relative">
+                        <button onclick="deleteOptometrist(${idx})" class="absolute top-2 right-2 text-rose-500 text-xs cursor-pointer"><i class="fa-solid fa-user-minus"></i> 刪除</button>
+                        <div class="font-bold text-slate-700">驗光師姓名：<input type="text" value="${opt.name}" onchange="db.optometrists[${idx}].name = this.value; renderFrontend();" class="border px-1 py-0.5 rounded bg-white"></div>
+                        <div>問候語：<input type="text" value="${opt.greeting}" onchange="db.optometrists[${idx}].greeting = this.value; renderFrontend();" class="w-full border px-1 py-0.5 rounded bg-white"></div>
+                    </div>
+                `;
+            });
+
+            const tableBody = document.getElementById('backend-appointments-table');
+            tableBody.innerHTML = '';
+            
+            let successCount = 0;
+            let failCount = 0;
+            let partnerStats = {};
+            db.partners.forEach(p => partnerStats[p] = 0);
+
+            db.appointments.forEach((app) => {
+                if (app.status === '赴約' || app.status === '締結') successCount++;
+                if (app.status === '爽約' || app.status === '取消') failCount++;
+                if (partnerStats[app.partner] !== undefined) {
+                    partnerStats[app.partner]++;
+                }
+
+                let statusBadge = "";
+                if(app.status === "待聯繫") statusBadge = "<span class='bg-amber-100 text-amber-800 px-2 py-0.5 rounded'>待聯繫</span>";
+                else if(app.status === "赴約") statusBadge = "<span class='bg-blue-100 text-blue-800 px-2 py-0.5 rounded'>赴約</span>";
+                else if(app.status === "締結") statusBadge = "<span class='bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded'>💰 締結</span>";
+                else if(app.status === "爽約") statusBadge = "<span class='bg-rose-100 text-rose-800 px-2 py-0.5 rounded'>爽約</span>";
+                else if(app.status === "取消") statusBadge = "<span class='bg-stone-200 text-stone-600 px-2 py-0.5 rounded'>取消</span>";
+
+                tableBody.innerHTML += `
+                    <tr class="hover:bg-stone-50/80 transition-colors">
+                        <td class="p-2.5">
+                            <div class="font-bold text-slate-800">${app.name}</div>
+                            <div class="text-slate-500 text-[11px]">${app.phone}</div>
+                        </td>
+                        <td class="p-2.5">
+                            <div class="text-slate-700">${app.datetime}</div>
+                        </td>
+                        <td class="p-2.5">
+                            <div class="text-slate-600 max-w-[150px] truncate" title="${app.services.join(', ')}">${app.services.join(', ')}</div>
+                            <div class="text-teal-700 text-[11px] font-medium"><i class="fa-solid fa-user-doctor text-[9px]"></i> ${app.optometrist}</div>
+                        </td>
+                        <td class="p-2.5 font-medium text-slate-600">${app.partner || '無'}</td>
+                        <td class="p-2.5 space-y-1">
+                            <div class="mb-1">${statusBadge}</div>
+                            <div class="flex flex-wrap gap-1">
+                                <button onclick="changeAppStatus(${app.id}, '赴約')" class="px-1.5 py-0.5 border border-blue-300 text-blue-700 bg-white hover:bg-blue-50 text-[10px] rounded cursor-pointer">赴約</button>
+                                <button onclick="changeAppStatus(${app.id}, '締結')" class="px-1.5 py-0.5 border border-emerald-300 text-emerald-700 bg-white hover:bg-emerald-50 text-[10px] rounded cursor-pointer">締結</button>
+                                <button onclick="changeAppStatus(${app.id}, '爽約')" class="px-1.5 py-0.5 border border-rose-300 text-rose-700 bg-white hover:bg-rose-50 text-[10px] rounded cursor-pointer">爽約</button>
+                                <button onclick="changeAppStatus(${app.id}, '取消')" class="px-1.5 py-0.5 border border-stone-300 text-stone-600 bg-white hover:bg-stone-50 text-[10px] rounded cursor-pointer">取消</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            document.getElementById('stat-success').innerText = successCount;
+            document.getElementById('stat-fail').innerText = failCount;
+
+            const rankContainer = document.getElementById('stat-partners-rank');
+            rankContainer.innerHTML = '';
+            const sortedPartners = Object.keys(partnerStats).sort((a,b) => partnerStats[b] - partnerStats[a]);
+            sortedPartners.forEach((pName, index) => {
+                rankContainer.innerHTML += `
+                    <div class="flex justify-between items-center py-0.5 border-b border-stone-100 last:border-0">
+                        <span>${index+1}. ${pName}</span>
+                        <span class="font-bold text-teal-700">${partnerStats[pName]} 筆</span>
+                    </div>
+                `;
+            });
+        }
+
+        function changeAppStatus(appId, newStatus) {
+            const app = db.appointments.find(a => a.id === appId);
+            if (app) {
+                app.status = newStatus;
+                renderBackend();
+            }
+        }
+
+        function saveSystemSettings() {
+            db.system_settings.start_day = parseInt(document.getElementById('cfg-start-day').value);
+            db.system_settings.end_day = parseInt(document.getElementById('cfg-end-day').value);
+            db.system_settings.email = document.getElementById('cfg-email').value;
+            alert("系統參數設定成功！");
+            renderBackend();
+        }
+
+        function addPartnerPrompt() {
+            const name = prompt("請輸入周邊新加入推薦計畫的合作行號名稱：");
+            if (name && name.trim()) {
+                if(db.partners.includes(name.trim())) { alert("該行號已存在"); return; }
+                db.partners.push(name.trim());
+                renderFrontend();
+                renderBackend();
+            }
+        }
+
+        function deletePartner(idx) {
+            if(confirm(`確認要移除合作行號「${db.partners[idx]}」嗎？`)) {
+                db.partners.splice(idx, 1);
+                renderFrontend();
+                renderBackend();
+            }
+        }
+
+        function addOptometristPrompt() {
+            const name = prompt("請輸入新任驗光師姓名：");
+            if (name && name.trim()) {
+                db.optometrists.push({
+                    id: Date.now(),
+                    name: name.trim(),
+                    licenses: ["專業國家認證驗光人員"],
+                    specialties: ["精準配鏡檢測"],
+                    greeting: "很高興為您提供最高水準的視力呵護服務。"
+                });
+                renderFrontend();
+                renderBackend();
+            }
+        }
+
+        function deleteOptometrist(idx) {
+            if(confirm(`確認要刪除「${db.optometrists[idx].name}」嗎？`)) {
+                db.optometrists.splice(idx, 1);
+                renderFrontend();
+                renderBackend();
+            }
+        }
+    </script>
+</body>
+</html>
