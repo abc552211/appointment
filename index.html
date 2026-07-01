@@ -7,7 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* 隱藏捲軸但可滑動 */
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
@@ -26,14 +25,14 @@
             <section class="mb-6">
                 <h2 class="text-lg font-bold mb-3 border-l-4 border-blue-600 pl-2">專業驗光師團隊</h2>
                 <div class="flex overflow-x-auto space-x-2 no-scrollbar mb-3" id="optometristTabs">
-                    <button class="shrink-0 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">王大明 驗光師</button>
-                    <button class="shrink-0 bg-gray-200 text-gray-600 px-4 py-2 rounded-lg text-sm font-medium">李小華 驗光師</button>
-                </div>
-                <div class="bg-blue-50 p-4 rounded-xl flex gap-4 items-center">
-                    <div class="w-16 h-16 bg-gray-300 rounded-full shrink-0"></div> <div>
-                        <h3 class="font-bold text-blue-800">王大明 (國家認證)</h3>
-                        <p class="text-xs text-gray-600 mt-1">專長：多焦鏡片、兒童近視控制</p>
-                        <p class="text-xs text-blue-600 mt-1 italic">「為您量身打造清晰視界」</p>
+                    </div>
+                
+                <div class="bg-blue-50 p-4 rounded-xl flex gap-4 items-center min-h-[100px]">
+                    <div class="w-16 h-16 bg-gray-300 rounded-full shrink-0"></div>
+                    <div id="optProfileContent">
+                        <h3 id="optName" class="font-bold text-blue-800">載入中...</h3>
+                        <p id="optSpec" class="text-xs text-gray-600 mt-1"></p>
+                        <p id="optGreet" class="text-xs text-blue-600 mt-1 italic"></p>
                     </div>
                 </div>
             </section>
@@ -47,51 +46,43 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">姓名</label>
-                            <input type="text" id="custName" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <input type="text" id="custName" required class="w-full border rounded-lg p-2 outline-none">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">手機號碼</label>
-                            <input type="tel" id="custPhone" required class="w-full border rounded-lg p-2 focus:ring-2 focus:ring-blue-500 outline-none">
+                            <input type="tel" id="custPhone" required class="w-full border rounded-lg p-2 outline-none">
                         </div>
                     </div>
 
                     <div>
                         <label class="block text-sm text-gray-600 mb-1">推薦來源</label>
                         <select id="referral" class="w-full border rounded-lg p-2 bg-white outline-none">
-                            <option value="">自行預約</option>
-                            <option value="shop_A">特約咖啡廳-南灣店</option>
+                            <option value="">自行預約 (無推薦)</option>
                         </select>
                     </div>
 
                     <div>
                         <label class="block text-sm text-gray-600 mb-2">諮詢項目 (可複選)</label>
-                        <div class="grid grid-cols-2 gap-2 text-sm">
-                            <label class="flex items-center space-x-2"><input type="checkbox" value="視力檢查" class="rounded text-blue-600"> <span>視力檢查</span></label>
-                            <label class="flex items-center space-x-2"><input type="checkbox" value="配鏡諮詢" class="rounded text-blue-600"> <span>配鏡諮詢</span></label>
-                            <label class="flex items-center space-x-2"><input type="checkbox" value="隱形眼鏡" class="rounded text-blue-600"> <span>隱形眼鏡驗配</span></label>
-                            <label class="flex items-center space-x-2"><input type="checkbox" value="鏡架調整" class="rounded text-blue-600"> <span>鏡架調整</span></label>
-                        </div>
+                        <div class="grid grid-cols-2 gap-2 text-sm" id="servicesContainer">
+                            </div>
                     </div>
 
                     <div>
                         <label class="block text-sm text-gray-600 mb-1">指定驗光師</label>
                         <select id="optometristSelect" class="w-full border rounded-lg p-2 bg-white outline-none">
                             <option value="">不指定 (安排最快時段)</option>
-                            <option value="1">王大明 驗光師</option>
                         </select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">預約日期</label>
-                            <input type="date" id="bookDate" required class="w-full border rounded-lg p-2 outline-none">
+                            <input type="date" id="bookDate" required onchange="loadAvailableTimes()" class="w-full border rounded-lg p-2 outline-none">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">預約時段</label>
                             <select id="bookTime" required class="w-full border rounded-lg p-2 bg-white outline-none">
-                                <option value="" disabled selected>請先選日期</option>
-                                <option value="10:00">10:00 - 11:00</option>
-                                <option value="14:00">14:00 - 15:00</option>
+                                <option value="" disabled selected>請先選擇日期</option>
                             </select>
                         </div>
                     </div>
@@ -112,19 +103,12 @@
                 <label class="block text-sm text-gray-600 mb-2">請輸入預約時的電話號碼</label>
                 <div class="flex gap-2">
                     <input type="tel" id="queryPhone" class="w-full border rounded-lg p-2 outline-none" placeholder="09XX-XXX-XXX">
-                    <button onclick="searchAppointments()" class="bg-gray-800 text-white px-4 rounded-lg">查詢</button>
+                    <button onclick="searchAppointments()" class="bg-gray-800 text-white px-4 rounded-lg active:bg-gray-700">查詢</button>
                 </div>
             </div>
             
             <div id="resultCards" class="mt-4 space-y-3 hidden">
-                <div class="bg-white p-4 rounded-xl shadow-sm border border-red-100 relative">
-                    <span class="absolute top-3 right-3 bg-green-100 text-green-700 text-xs px-2 py-1 rounded">已確認</span>
-                    <p class="font-bold">2026-07-05 (日) 14:00</p>
-                    <p class="text-sm text-gray-600 mt-1">驗光師：王大明</p>
-                    <p class="text-sm text-gray-600">項目：視力檢查、配鏡諮詢</p>
-                    <button class="mt-3 w-full border border-red-500 text-red-500 py-2 rounded-lg text-sm font-bold active:bg-red-50">取消此筆預約</button>
                 </div>
-            </div>
             <button onclick="toggleSection('bookingSection')" class="mt-6 w-full text-blue-600 text-sm py-2">返回預約首頁</button>
         </main>
 
@@ -139,53 +123,92 @@
     const SUPABASE_KEY = 'sb_publishable_Nb8lbrKVTRuj4wRkTN66kg_Cy1nBNgz';
     const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    // 網頁載入後，立刻從資料庫撈取資料
+    // 全域變數存驗光師資料，方便切換畫面
+    let optometristsData = [];
+
     document.addEventListener('DOMContentLoaded', async () => {
         await loadOptometrists();
         await loadReferrals();
+        await loadServices();
     });
 
-    // 動態載入驗光師
+    // 1. 動態載入驗光師，並綁定「點擊按鈕」更新下方卡片
     async function loadOptometrists() {
         const { data, error } = await supabase.from('optometrists').select('*').eq('is_active', true);
-        if (error || !data) return console.error('讀取驗光師失敗', error);
-
+        if (error || !data) return;
+        
+        optometristsData = data;
         const tabsContainer = document.getElementById('optometristTabs');
         const selectContainer = document.getElementById('optometristSelect');
         
-        // 清空寫死的假資料
         tabsContainer.innerHTML = '';
         selectContainer.innerHTML = '<option value="">不指定 (安排最快時段)</option>';
 
-        data.forEach(opt => {
-            // 1. 產生簡介書籤 Tabs
-            tabsContainer.innerHTML += `<button class="shrink-0 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium mr-2">${opt.name} 驗光師</button>`;
-            
-            // 2. 加入下拉選單
-            selectContainer.innerHTML += `<option value="${opt.id}">${opt.name} 驗光師</option>`;
+        data.forEach((opt, index) => {
+            // 加入 onclick 事件，點擊時執行 showOptProfile
+            tabsContainer.innerHTML += `<button onclick="showOptProfile(${index})" type="button" class="shrink-0 bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium mr-2 active:bg-blue-800 focus:ring-2 focus:ring-blue-300">${opt.name} 驗光師</button>`;
+            selectContainer.innerHTML += `<option value="${opt.id}">${opt.name}</option>`;
         });
+
+        // 預設顯示第一位驗光師的資料
+        if(data.length > 0) showOptProfile(0);
     }
 
-    // 動態載入合作行號
+    // 負責更新驗光師卡片內容的函數
+    function showOptProfile(index) {
+        const opt = optometristsData[index];
+        document.getElementById('optName').innerText = `${opt.name} ${opt.license ? '('+opt.license+')' : ''}`;
+        
+        // 處理陣列格式的專長
+        let specialtiesText = '專長：未提供';
+        if (opt.specialties && Array.isArray(opt.specialties)) {
+             specialtiesText = `專長：${opt.specialties.join('、')}`;
+        } else if (typeof opt.specialties === 'string') {
+             // 若存成字串時的備用處理
+             specialtiesText = `專長：${opt.specialties.replace(/[{}"\[\]]/g, '').split(',').join('、')}`;
+        }
+        document.getElementById('optSpec').innerText = specialtiesText;
+        document.getElementById('optGreet').innerText = opt.greeting ? `「${opt.greeting}」` : '';
+    }
+
+    // 2. 載入合作行號
     async function loadReferrals() {
-        const { data, error } = await supabase.from('referral_sources').select('*').eq('is_active', true);
-        if (error || !data) return;
+        const { data } = await supabase.from('referral_sources').select('*').eq('is_active', true);
+        if (!data) return;
+        const select = document.getElementById('referral');
+        data.forEach(ref => select.innerHTML += `<option value="${ref.id}">${ref.name}</option>`);
+    }
 
-        const referralSelect = document.getElementById('referral');
-        referralSelect.innerHTML = '<option value="">自行預約 (無推薦)</option>';
-        data.forEach(ref => {
-            referralSelect.innerHTML += `<option value="${ref.id}">${ref.name}</option>`;
+    // 3. 載入服務項目 (建立 Checkbox)
+    async function loadServices() {
+        const { data } = await supabase.from('services').select('*').eq('is_active', true);
+        if (!data) return;
+        const container = document.getElementById('servicesContainer');
+        container.innerHTML = '';
+        data.forEach(srv => {
+            container.innerHTML += `<label class="flex items-center space-x-2"><input type="checkbox" value="${srv.id}" class="rounded text-blue-600"> <span>${srv.name}</span></label>`;
         });
     }
 
-    // 切換頁面
-    function toggleSection(sectionId) {
-        document.getElementById('bookingSection').classList.add('hidden');
-        document.getElementById('querySection').classList.add('hidden');
-        document.getElementById(sectionId).classList.remove('hidden');
+    // 4. 客戶選完日期後，動態產生時間選項
+    function loadAvailableTimes() {
+        const dateVal = document.getElementById('bookDate').value;
+        const timeSelect = document.getElementById('bookTime');
+        
+        if(!dateVal) {
+            timeSelect.innerHTML = '<option value="" disabled selected>請先選擇日期</option>';
+            return;
+        }
+
+        // 這裡暫時產生固定營業時段供選擇 (實務上這裡會打API比對 optometrist_schedules 班表)
+        timeSelect.innerHTML = '<option value="" disabled selected>請選擇時段</option>';
+        const mockTimes = ['10:00', '11:00', '13:00', '14:00', '15:00', '16:00', '19:00', '20:00'];
+        mockTimes.forEach(t => {
+            timeSelect.innerHTML += `<option value="${t}">${t}</option>`;
+        });
     }
 
-    // 提交預約表單
+    // 5. 提交預約
     document.getElementById('bookingForm').addEventListener('submit', async (e) => {
         e.preventDefault();
         
@@ -211,30 +234,72 @@
             
             alert(`預約已送出！\n您的預約單號為：${bookingNo}\n我們將儘速安排專人與您聯繫。`);
             document.getElementById('bookingForm').reset();
+            document.getElementById('bookTime').innerHTML = '<option value="" disabled selected>請先選擇日期</option>';
         } catch (err) {
             console.error(err);
-            alert('預約失敗，請確認資料庫 RLS 權限是否已開啟。');
+            alert('預約失敗，請確認資料庫連線。');
         }
     });
 
-    // 查詢預約
+    // 6. 查詢預約紀錄並渲染卡片
     async function searchAppointments() {
         const phone = document.getElementById('queryPhone').value;
         if(!phone) return alert('請輸入電話號碼');
         
         const { data, error } = await supabase
             .from('appointments')
-            .select('*')
+            .select('*, optometrists(name)') // Join 驗光師名字
             .eq('customer_phone', phone)
             .eq('status', 'pending');
 
-        if(data && data.length > 0) {
-            alert(`查到 ${data.length} 筆預約！\n預約日期：${data[0].appointment_date}`);
-            // 實務上這裡會渲染卡片並提供取消按鈕，並 update status 為 cancelled
+        const resultContainer = document.getElementById('resultCards');
+        resultContainer.innerHTML = ''; // 清空上次結果
+
+        if (error || !data || data.length === 0) {
+            resultContainer.classList.add('hidden');
+            return alert('查無尚未赴約的紀錄。');
+        }
+
+        resultContainer.classList.remove('hidden');
+        data.forEach(app => {
+            const optName = app.optometrists ? app.optometrists.name : '不指定';
+            // 將紀錄動態塞進 HTML 裡，並綁定取消按鈕 onclick
+            resultContainer.innerHTML += `
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-blue-100 relative mb-3">
+                    <span class="absolute top-3 right-3 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">已預約</span>
+                    <p class="font-bold text-lg">${app.appointment_date} ${app.appointment_time.substring(0,5)}</p>
+                    <p class="text-sm text-gray-600 mt-1">預約單號：${app.booking_no}</p>
+                    <p class="text-sm text-gray-600">指定驗光師：${optName}</p>
+                    <button onclick="cancelAppointment('${app.id}')" type="button" class="mt-3 w-full border border-red-500 text-red-500 py-2 rounded-lg text-sm font-bold active:bg-red-50 focus:ring-2 focus:ring-red-300">
+                        取消此筆預約
+                    </button>
+                </div>
+            `;
+        });
+    }
+
+    // 7. 取消預約邏輯
+    async function cancelAppointment(appId) {
+        if(!confirm('您確定要取消這筆預約嗎？')) return;
+
+        const { error } = await supabase
+            .from('appointments')
+            .update({ status: 'cancelled' })
+            .eq('id', appId);
+
+        if(error) {
+            alert('取消失敗，請稍後再試。');
         } else {
-            alert('查無尚未赴約的紀錄。');
+            alert('預約已成功取消。');
+            searchAppointments(); // 重新整理查詢結果
         }
     }
-</script>
+
+    function toggleSection(sectionId) {
+        document.getElementById('bookingSection').classList.add('hidden');
+        document.getElementById('querySection').classList.add('hidden');
+        document.getElementById(sectionId).classList.remove('hidden');
+    }
+    </script>
 </body>
 </html>
